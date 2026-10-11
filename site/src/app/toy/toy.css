@@ -1,0 +1,159 @@
+/* Live toy screen. Neo shell over the design system: ink outlines, hard ink shadows that buttons press into.
+   Motion is transform / opacity / filter only; the app's Less motion switch (.ctb-calm) ends every animation. */
+
+.lt { display: flex; flex-direction: column; gap: var(--space-6); }
+.lt-head { display: flex; align-items: center; gap: var(--space-3); min-height: var(--tap-min); }
+.lt-head .title { margin-right: auto; color: var(--ink); }
+
+/* quiet round icon buttons: sound, clear chat */
+.lt .lt-icon-btn { display: grid; place-items: center; flex: none; width: var(--tap-min); height: var(--tap-min); padding: 0; border: 3px solid var(--ink); border-radius: 50%;
+  background: var(--card); color: var(--ink); cursor: pointer; -webkit-tap-highlight-color: transparent;
+  transition: transform 150ms var(--ease-out), background-color 150ms ease, opacity 150ms ease; }
+.lt .lt-icon-btn:not(:disabled):active { transform: scale(.96); }
+.lt .lt-icon-btn:disabled { opacity: .4; cursor: not-allowed; }
+.lt .lt-icon-btn:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+
+/* ───────── finding a toy ───────── */
+.lt-pick { display: flex; flex-direction: column; align-items: center; gap: var(--space-8); padding: var(--space-6) 0 var(--space-8); text-align: center; }
+.lt-pick-say { min-height: 32px; color: var(--ink); }
+.lt-radar { position: relative; display: grid; place-items: center; width: 240px; height: 240px; }
+.lt-radar i { position: absolute; inset: 0; border-radius: 50%; border: 4px solid var(--sky); opacity: 0; animation: lt-ping 1.8s var(--ease-out) infinite; }
+.lt-radar i:nth-child(2) { animation-delay: .6s; }
+.lt-radar i:nth-child(3) { animation-delay: 1.2s; }
+.lt-radar-dot { position: relative; display: grid; place-items: center; width: 116px; height: 116px; box-sizing: border-box; border-radius: 50%;
+  border: 3px solid var(--ink); background: var(--sky-soft); box-shadow: var(--shadow-soft); }
+@keyframes lt-ping { from { opacity: .9; transform: scale(.45); } to { opacity: 0; transform: scale(1); } }
+
+.lt-toys { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--space-6); width: 100%; max-width: 960px; margin: 0; padding: 0; list-style: none; }
+.lt .lt-toycard { display: flex; flex-direction: column; align-items: center; gap: var(--space-3); width: 100%; box-sizing: border-box; padding: var(--space-6) var(--space-3) var(--space-4);
+  border: 3px solid var(--ink); border-radius: var(--radius-lg); background: var(--card); color: var(--ink); font-family: var(--font-body);
+  box-shadow: 6px 6px 0 0 var(--ink); rotate: var(--tilt); cursor: pointer; -webkit-tap-highlight-color: transparent;
+  transition: translate 200ms var(--ease-out), rotate 200ms var(--ease-out), box-shadow 200ms var(--ease-out), opacity 200ms ease, background-color 200ms ease; }
+@media (hover: hover) {
+  .lt .lt-toycard:not(:disabled):hover { translate: -2px -2px; rotate: 0deg; box-shadow: 8px 8px 0 0 var(--ink); }
+}
+.lt .lt-toycard:not(:disabled):active { translate: 4px 4px; box-shadow: 2px 2px 0 0 var(--ink); }
+.lt .lt-toycard:focus-visible { outline: none; box-shadow: 6px 6px 0 0 var(--ink), var(--focus-ring); }
+.lt .lt-toycard[aria-current="true"] { background: var(--sky-soft); }
+.lt .lt-toycard.is-joining { rotate: 0deg; translate: 0 -6px; background: var(--sky-soft); box-shadow: 8px 8px 0 0 var(--ink); }
+.lt .lt-toycard.is-dim { opacity: .4; }
+.lt .lt-toycard:disabled { cursor: default; }
+
+/* ───────── talking ───────── */
+.lt-main { display: grid; grid-template-columns: minmax(280px, 340px) minmax(0, 1fr); gap: var(--space-6); align-items: stretch; }
+.lt .lt-stage { display: flex; flex-direction: column; align-items: center; gap: var(--space-4); padding: var(--space-6); }
+.lt-toy { position: relative; display: grid; place-items: center; }
+.lt .lt-name { display: inline-flex; align-items: center; gap: var(--space-1); min-height: var(--tap-min); padding: 0 var(--space-3) 0 var(--space-6); border: 3px solid var(--ink); border-radius: var(--radius-pill);
+  background: var(--paper); color: var(--ink); font-family: var(--font-body); cursor: pointer; -webkit-tap-highlight-color: transparent;
+  transition: transform 150ms var(--ease-out), background-color 150ms ease; }
+.lt .lt-name:active { transform: scale(.96); }
+.lt .lt-name:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+.lt-count { display: inline-flex; align-items: center; gap: var(--space-2); margin: 0; color: var(--ink); font-variant-numeric: tabular-nums; }
+.lt-num { display: inline-block; min-width: 1ch; color: var(--sky); }
+.lt-num.is-pop { animation: lt-pop 450ms var(--ease-out) both; }
+@keyframes lt-pop { 0% { opacity: .3; transform: scale(.6); } 55% { opacity: 1; transform: scale(1.4); } 100% { opacity: 1; transform: none; } }
+
+.lt .lt-chat { display: flex; flex-direction: column; gap: var(--space-4); min-width: 0; padding: var(--space-6); }
+.lt-log { flex: 1 1 0; min-height: 320px; display: flex; flex-direction: column; gap: var(--space-4); margin: 0; padding: var(--space-6) var(--space-3) var(--space-2) 0;
+  list-style: none; overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; }
+.lt-line { display: flex; flex-direction: column; align-items: flex-start; }
+.lt-line--child { align-items: flex-end; }
+.lt-line--toy { padding-top: var(--space-6); } /* room for the status sticker */
+.lt-log .ctb-bubble { max-width: min(440px, 92%); }
+.lt-log .ctb-bubble--safe, .lt-log .ctb-bubble--careful, .lt-log .ctb-bubble--unsafe { min-width: min(220px, 100%); }
+.lt-log .ctb-bubble-tag { right: -6px; }
+.lt-line--child .ctb-bubble-body { transform-origin: 90% 100%; }
+.lt-line--child .ctb-bubble-body::after { left: auto; right: 30px; }
+
+/* the Safety Shield at work: checking, then the caught answer crossed out */
+.lt-card { position: relative; overflow: hidden; display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-2); max-width: min(440px, 92%); box-sizing: border-box;
+  padding: var(--space-3) var(--space-4) var(--space-4); border: 3px solid; border-radius: var(--radius-lg); animation: lt-in 300ms var(--ease-out) both; }
+.lt-card p { margin: 0; color: var(--ink); }
+.lt-card--check { border-color: var(--sky); background: var(--sky-soft); }
+.lt-card-head { display: inline-flex; align-items: center; gap: var(--space-2); color: var(--sky-deep); }
+.lt-blur { filter: blur(4px); opacity: .7; user-select: none; }
+.lt-scan { position: absolute; top: 0; bottom: 0; left: 0; width: 30%; pointer-events: none;
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--sky) 30%, transparent) 70%, var(--sky) 94%, transparent);
+  animation: lt-sweep 900ms ease-in-out infinite alternate; }
+.lt-card--caught { --d: -350ms; border-color: var(--danger); background: var(--danger-soft); rotate: -1deg; }
+@keyframes lt-sweep { from { transform: translateX(-100%); } to { transform: translateX(333%); } }
+@keyframes lt-in { from { opacity: 0; transform: translateY(8px) scale(.97); } to { opacity: 1; transform: none; } }
+
+/* one row of questions; it scrolls sideways when it runs out of room */
+.lt-chips { display: flex; gap: var(--space-2); margin: -10px -10px -4px; padding: 10px 10px 14px; overflow-x: auto; overscroll-behavior-x: contain;
+  scroll-snap-type: x proximity; scrollbar-width: thin; scrollbar-color: var(--ink-soft) transparent; }
+.lt .lt-chip { flex: none; scroll-snap-align: start; display: inline-flex; align-items: center; gap: var(--space-2); min-height: var(--tap-min); padding: 0 var(--space-4) 0 var(--space-2);
+  border: 3px solid var(--ink); border-radius: var(--radius-pill); background: var(--paper); color: var(--ink); font: 800 18px/1.2 var(--font-body); white-space: nowrap;
+  box-shadow: 3px 3px 0 0 var(--ink); cursor: pointer; -webkit-tap-highlight-color: transparent;
+  transition: translate 150ms var(--ease-out), box-shadow 150ms var(--ease-out), background-color 150ms ease, opacity 150ms ease; }
+@media (hover: hover) {
+  .lt .lt-chip:not(:disabled):hover { translate: -1px -1px; box-shadow: 4px 4px 0 0 var(--ink); background: var(--sun-soft); }
+  .lt .lt-name:hover, .lt .lt-icon-btn:not(:disabled):hover { background: var(--sky-soft); }
+}
+.lt .lt-chip:not(:disabled):active { translate: 3px 3px; box-shadow: 0 0 0 0 var(--ink); }
+.lt .lt-chip:disabled { opacity: .5; cursor: not-allowed; }
+.lt .lt-chip:focus-visible { outline: none; box-shadow: 3px 3px 0 0 var(--ink), var(--focus-ring); }
+
+/* mic, field, Send */
+.lt-ask { display: flex; align-items: center; gap: var(--space-3); }
+.lt .lt-input { flex: 1; min-width: 0; height: var(--tap-min); box-sizing: border-box; padding: 0 var(--space-4); border: 3px solid var(--ink); border-radius: var(--radius-md);
+  background: var(--card); color: var(--ink); font: 700 22px/1.2 var(--font-body); transition: background-color 150ms ease, border-color 150ms ease; }
+.lt .lt-input::placeholder { color: var(--ink-soft); opacity: 1; }
+.lt .lt-input:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+.lt .lt-input.is-listening { border-color: var(--safe-ink); background: var(--safe-soft); }
+.lt .lt-mic { position: relative; display: grid; place-items: center; flex: none; width: var(--tap-min); height: var(--tap-min); box-sizing: border-box; padding: 0;
+  border: 3px solid var(--ink); border-radius: 50%; background: var(--sky-soft); box-shadow: 3px 3px 0 0 var(--ink); cursor: pointer; -webkit-tap-highlight-color: transparent;
+  transition: translate 150ms var(--ease-out), box-shadow 150ms var(--ease-out), background-color 150ms ease, opacity 150ms ease; }
+.lt-mic-pic { display: grid; place-items: center; width: 42px; height: 42px; border-radius: 50%; background: var(--card); }
+.lt .lt-mic:not(:disabled):active { translate: 3px 3px; box-shadow: 0 0 0 0 var(--ink); }
+.lt .lt-mic:disabled { opacity: .4; cursor: not-allowed; }
+.lt .lt-mic:focus-visible { outline: none; box-shadow: 3px 3px 0 0 var(--ink), var(--focus-ring); }
+.lt .lt-mic.is-on { background: var(--sky); }
+.lt .lt-mic.is-on::before, .lt .lt-mic.is-on::after { content: ''; position: absolute; inset: -3px; border-radius: 50%; border: 3px solid var(--sky); pointer-events: none; animation: lt-ring 1.4s var(--ease-out) infinite; }
+.lt .lt-mic.is-on::after { animation-delay: .7s; }
+@keyframes lt-ring { from { opacity: .9; transform: scale(1); } to { opacity: 0; transform: scale(1.6); } }
+
+.lt-foot { display: flex; justify-content: center; }
+
+/* ───────── narrower ───────── */
+@container ctb (max-width: 1080px) {
+  .lt-toys { grid-template-columns: repeat(2, minmax(0, 1fr)); max-width: 560px; }
+}
+/* stacked: the stage folds into two columns so the switch and the chat fit on one screen */
+@container ctb (max-width: 820px) {
+  .lt-main { grid-template-columns: minmax(0, 1fr); }
+  .lt .lt-stage { display: grid; grid-template-columns: auto auto; grid-template-areas: "toy shield" "name count"; justify-content: center; align-items: center; justify-items: center;
+    column-gap: var(--space-8); row-gap: var(--space-3); }
+  .lt-toy { grid-area: toy; }
+  .lt .lt-name { grid-area: name; }
+  .lt .lt-stage .ctb-switch-wrap { grid-area: shield; }
+  .lt-count { grid-area: count; }
+  .lt-log { flex: none; height: 380px; min-height: 0; }
+}
+@container ctb (max-width: 640px) {
+  .lt { gap: var(--space-4); }
+  .lt-pick { gap: var(--space-6); padding-top: var(--space-2); }
+  .lt-radar { width: 200px; height: 200px; }
+  .lt-toys { gap: var(--space-4); }
+  .lt .lt-toycard { padding: var(--space-4) var(--space-2) var(--space-3); }
+  .lt .lt-toycard .ctb-toy { width: 96px; height: auto; }
+  .lt .lt-stage { grid-template-columns: auto minmax(0, 1fr); column-gap: var(--space-3); row-gap: var(--space-2); padding: var(--space-3); }
+  .lt .lt-stage .ctb-toy { width: 104px; height: auto; }
+  .lt .lt-name { padding-left: var(--space-4); }
+  .lt .lt-name .label { font-size: 20px; }
+  .lt .lt-stage .ctb-switch-wrap { gap: var(--space-2); }
+  .lt .lt-stage .ctb-switch-label { gap: var(--space-1); font-size: 20px; line-height: 24px; }
+  .lt .lt-stage .ctb-switch-label .ctb-icon { width: 30px; height: 30px; }
+  .lt .lt-stage .ctb-switch { --w: 156px; --t: 60px; height: 76px; }
+  .lt .lt-stage .ctb-switch-thumb .ctb-icon { width: 44px; height: 44px; }
+  .lt .lt-chat { gap: var(--space-3); padding: var(--space-4) var(--space-3); }
+  .lt-log { height: 300px; padding-right: var(--space-2); }
+  .lt-log .ctb-bubble-body { padding: var(--space-3) var(--space-4); font-size: 20px; line-height: 28px; }
+  .lt-log .ctb-bubble-tag { scale: .85; transform-origin: right bottom; }
+  .lt-card { max-width: 100%; }
+  .lt-ask { gap: var(--space-2); }
+  .lt .lt-input { padding: 0 var(--space-3); font-size: 20px; }
+  .lt .lt-send { width: var(--tap-min); padding: 0; }
+  .lt .lt-send .ctb-btn-icon--right { margin: 0; }
+  .lt .lt-send .ctb-btn-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+}
