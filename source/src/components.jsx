@@ -883,7 +883,7 @@ function FixCard({ icon = 'flame', topic, question, bad, good, delay = 0, classN
 
 /* ───────────── Shipments ───────────── */
 /** A shipment as a cardboard box, with its status and the Add Safety Shield action. */
-function ShipmentBox({ id, count, toy = 'bear', toyName, status = 'unsafe', grade, progress = 0, onAddShield, actionLabel = 'Add Safety Shield', delay = 0, className }) {
+function ShipmentBox({ id, count, toy = 'bear', toyName, status = 'unsafe', grade, progress = 0, onAddShield, actionLabel = 'Add Safety Shield', busyLabel = 'Adding shield…', delay = 0, className }) {
   const name = toyName || TOY_NAMES[toy] + 's';
   const prev = useRef(status);
   const [justFixed, setJustFixed] = useState(false);
@@ -917,7 +917,7 @@ function ShipmentBox({ id, count, toy = 'bear', toyName, status = 'unsafe', grad
             <BigButton size="md" icon="shield" onClick={onAddShield}>{actionLabel}</BigButton>
           </>
         )}
-        {status === 'fixing' && <div className="ctb-ship-fixing label"><span className="ctb-ship-fixfill" /><Icon name="shield" size={34} /><span>Adding shield…</span></div>}
+        {status === 'fixing' && <div className="ctb-ship-fixing label"><span className="ctb-ship-fixfill" /><Icon name="shield" size={34} /><span>{busyLabel}</span></div>}
         {status === 'testing' && <ProgressBar value={progress} label={`Testing… ${progress} of 100`} />}
         {status === 'safe' && <StatusTag status="safe" size="lg" stamp key="safe">Safe to ship</StatusTag>}
       </div>

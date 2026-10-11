@@ -3,7 +3,7 @@ import { useState, useEffect, useRef, useLayoutEffect } from 'react';
 import { MotionProvider, Icon, Buddy, Burst, BigButton, TopMenu, cx, prefersReduced } from '../ds.js';
 import { navigate, usePath } from '../router.jsx';
 import { Home, Talk, Crash, Report, Ships, Scan, Hand, MENU, TOUR, CANCEL, START_SHIPS } from './screens.jsx';
-import LiveToy from './toy/LiveToy.jsx';
+import LiveDemo from './toy/LiveDemo.jsx';
 import './app.css';
 
 // screen id -> URL under /app
@@ -228,7 +228,7 @@ export default function App() {
 
   const screens = {
     home: <Home go={go} narrow={narrow} startTour={startTour} />, talk: <Talk go={go} />, crash: <Crash go={go} fast={!!(tour && !tour.end)} />, report: <Report go={go} />,
-    ships: <Ships ships={ships} setShips={setShips} />, scan: <Scan go={go} narrow={narrow} sheetRoot={sheetRoot} />, toy: <LiveToy go={go} />,
+    ships: <Ships ships={ships} setShips={setShips} />, scan: <Scan go={go} narrow={narrow} sheetRoot={sheetRoot} />, toy: <LiveDemo />,
   };
   return (
     <div className="proto">

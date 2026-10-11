@@ -48,5 +48,6 @@ export default defineConfig({
     // components.jsx sits outside this folder; make it use our copy of React.
     dedupe: ['react', 'react-dom'],
   },
-  server: { fs: { allow: ['..'] } },
+  // /api/* is a Cloudflare Pages Function: `npx wrangler pages dev dist` serves it on 8788
+  server: { fs: { allow: ['..'] }, proxy: { '/api': 'http://localhost:8788' } },
 });

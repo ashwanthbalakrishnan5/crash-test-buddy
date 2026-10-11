@@ -345,7 +345,7 @@ export function Ships({ ships, setShips }) {
         </div>
       )}
       <div className="ships-grid">
-        {ships.map((s, i) => <ShipmentBox key={s.id} {...s} delay={120 + i * 130} actionLabel="Add Safety SDK" onAddShield={() => add(s.id)} />)}
+        {ships.map((s, i) => <ShipmentBox key={s.id} {...s} delay={120 + i * 130} actionLabel="Add Safety SDK" busyLabel="Adding the SDK…" onAddShield={() => add(s.id)} />)}
       </div>
     </section>
   );

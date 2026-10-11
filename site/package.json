@@ -11,6 +11,7 @@
     "deploy": "npm run build && npx wrangler pages deploy"
   },
   "dependencies": {
+    "@google/genai": "^2.28.0",
     "react": "^19.3.0",
     "react-dom": "^19.3.0"
   },
