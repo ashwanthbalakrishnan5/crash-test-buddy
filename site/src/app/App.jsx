@@ -1,7 +1,7 @@
 /* App shell: routes, Laptop / Phone preview, Start over and the self-playing tour. */
 import { useState, useEffect, useRef, useLayoutEffect } from 'react';
 import { MotionProvider, Icon, Buddy, Burst, BigButton, TopMenu, cx, prefersReduced } from '../ds.js';
-import { navigate, usePath, Link } from '../router.jsx';
+import { navigate, usePath } from '../router.jsx';
 import { Home, Talk, Crash, Report, Ships, Scan, Hand, MENU, TOUR, CANCEL, START_SHIPS } from './screens.jsx';
 import './app.css';
 
@@ -208,8 +208,13 @@ export default function App() {
     const el = innerRef.current; if (!el) return;
     const onClick = (e) => { if (tourRef.current && e.isTrusted && !e.target.closest('.tour-pill, .tour-end')) stopTour(); };
     el.addEventListener('click', onClick, true);
-    return () => el.removeEventListener('click', onClick, true);
+    // browser back / forward is a real action too
+    const onPop = () => { if (tourRef.current) stopTour(); };
+    window.addEventListener('popstate', onPop);
+    return () => { el.removeEventListener('click', onClick, true); window.removeEventListener('popstate', onPop); };
   }, []);
+  // the end card belongs to the screen the tour ended on
+  useEffect(() => { setTour((t) => (t && t.end ? null : t)); }, [route]);
   // /app?tour=1 (the landing page's "Watch how it works") plays the tour on arrival
   const autoTour = useRef(new URLSearchParams(window.location.search).get('tour') === '1');
   useEffect(() => {
@@ -227,8 +232,6 @@ export default function App() {
   return (
     <div className="proto">
       <div className="proto-bar">
-        <Link to="/" className="proto-title" onClick={stopTour}><Icon name="back" size={26} /><Buddy crop="head" size={36} title="" />Crash Test Buddy</Link>
-        <span className="proto-live small"><i aria-hidden="true" />Live prototype</span>
         <div className="proto-seg" role="group" aria-label="Preview size">
           <button type="button" aria-pressed={view === 'laptop'} onClick={() => setView('laptop')}><DeviceIcon kind="laptop" />Laptop</button>
           <button type="button" aria-pressed={view === 'phone'} onClick={() => setView('phone')}><DeviceIcon kind="phone" />Phone</button>
