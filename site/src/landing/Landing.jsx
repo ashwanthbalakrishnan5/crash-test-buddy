@@ -263,6 +263,33 @@ function Who() {
   );
 }
 
+const TEAM = [
+  { name: 'Sashikant Kumar', role: 'BS Mathematics', img: 'sashikant', fact: 'Once traveled 45 days with just 3 pairs of clothes.' },
+  { name: 'Ashwanth Balakrishnan', role: 'MS Computer Science', img: 'ashwanth', link: 'https://ashwanthbk.com', label: 'ashwanthbk.com' },
+  { name: 'Maulik Jadav', role: 'MS Computer Science', img: 'maulik' },
+  { name: 'Shrey Bishnoi', role: 'MS Computer Science', img: 'shrey', link: 'https://shrey-bish.github.io/', label: 'shrey-bish.github.io' },
+];
+function Team() {
+  return (
+    <section className="lp-sec" aria-labelledby="lp-team">
+      <div className="lp-wrap">
+        <Reveal as="h2" id="lp-team" className="title lp-h2 lp-center">Team Hand in Hand</Reveal>
+        <ul className="lp-team">
+          {TEAM.map((m, i) => (
+            <Reveal as="li" key={m.name} i={i + 1} className="lp-member" style={{ '--tilt': (i % 2 ? 1.5 : -1.5) + 'deg' }}>
+              <img src={`/team/${m.img}.webp`} alt={m.name} width="240" height="240" loading="lazy" decoding="async" />
+              <h3 className="heading">{m.name}</h3>
+              <p className="body lp-soft">{m.role}</p>
+              {m.fact && <p className="body">{m.fact}</p>}
+              {m.link && <a className="lp-member-link body" href={m.link} target="_blank" rel="noopener">{m.label}<span className="ctb-sr"> (opens in a new tab)</span></a>}
+            </Reveal>
+          ))}
+        </ul>
+      </div>
+    </section>
+  );
+}
+
 function Final({ phone }) {
   return (
     <section className="lp-sec" aria-labelledby="lp-final">
@@ -281,7 +308,7 @@ function Footer() {
   return (
     <footer className="lp-foot">
       <div className="lp-wrap lp-foot-in">
-        <span className="lp-foot-brand"><Buddy crop="head" size={40} title="" /><span>Crash Test Buddy<span className="lp-foot-team small lp-soft">by Team Hand in Hand</span></span></span>
+        <span className="lp-foot-brand"><Buddy crop="head" size={40} title="" />Crash Test Buddy</span>
         <a className="lp-foot-link" href="https://github.com/ashwanthbalakrishnan5/crash-test-buddy" target="_blank" rel="noopener">
           Code on GitHub<span className="ctb-sr"> (opens in a new tab)</span>
         </a>
@@ -320,6 +347,7 @@ export default function Landing() {
         <Live phone={phone} />
         <Grade />
         <Who />
+        <Team />
         <Final phone={phone} />
       </main>
       <Footer />
