@@ -6,7 +6,7 @@
    The mic is half-duplex: while the toy answers we send silence, so it never hears itself. */
 import { MODEL, CONFIG } from './live-config.js';
 import { startMic, createPlayer, toBase64 } from './audio.js';
-import { checkQuestion, checkAnswer, safeTurn } from './sdk.js';
+import { check, safeTurn } from './sdk.js';
 
 const SILENCE = toBase64(new Int16Array(1600).buffer);
 const MIME = 'audio/pcm;rate=16000';
@@ -35,25 +35,29 @@ export function createLiveToy(ui) {
   const current = () => (!turn || turn.done ? newTurn('voice') : turn);
 
   /* ── the SDK's decision for one turn ── */
-  function decide(t) {
-    if (t.verdict) return;
+  // The SDK reads the whole answer before the child hears any of it (the toy writes faster than it speaks).
+  async function decide(t) {
+    if (t.verdict || t.deciding) return;
+    t.deciding = true;
     clearTimeout(t.decideTimer);
-    const q = checkQuestion(t.child);
-    t.topic = q.topic;
-    t.icon = q.icon;
+    const v = await check(t.child, t.toy);
+    if (closed) return;
+    t.topic = v.topic;
+    t.icon = v.icon;
     t.flow = 'checked';
-    const bad = q.risky ? q : checkAnswer(t.toy);
-    if (bad) { block(t, q.risky ? 'question' : 'answer', bad); return; }
-    t.verdict = 'pass';
-    t.flow = 'passed';
-    t.queue.forEach((b) => player.play(b));
-    t.queue = [];
-    emit();
+    if (v.risky) block(t, 'question', v);
+    else {
+      t.verdict = 'pass';
+      t.flow = 'passed';
+      t.queue.forEach((b) => player.play(b));
+      t.queue = [];
+      emit();
+    }
+    if (t.closedEarly) onTurnComplete(t);
   }
   function maybeDecide(t) {
-    if (t.verdict) return;
-    if (t.childDone) { decide(t); return; }
-    if (!t.decideTimer) t.decideTimer = setTimeout(() => decide(t), 500); // the question's words may still be arriving
+    if (t.verdict || t.decideTimer) return;
+    t.decideTimer = setTimeout(() => decide(t), 4000); // in case the end-of-answer signal never comes
   }
   function block(t, by, info) {
     t.verdict = 'block';
@@ -95,7 +99,6 @@ export function createLiveToy(ui) {
       return;
     }
     t.toy += text;
-    if (t.sdk && t.verdict === 'pass') { const bad = checkAnswer(t.toy); if (bad) block(t, 'answer', bad); }
     emit();
   }
   function onMessage(m) {
@@ -106,7 +109,6 @@ export function createLiveToy(ui) {
       if (!turn || turn.done || turn.kind !== 'voice') newTurn('voice');
       if (heard.text) turn.child += heard.text;
       if (heard.finished) turn.childDone = true;
-      if (turn.queue.length) maybeDecide(turn);
       emit();
     }
     for (const p of sc.modelTurn?.parts || []) if (p.inlineData?.data) onAudio(p.inlineData.data);
@@ -120,9 +122,12 @@ export function createLiveToy(ui) {
       if (!turn.verdict) decide(turn);
       if (turn.verdict === 'block') inject(turn);
     }
-    if (sc.turnComplete && turn) {
-      const t = turn;
-      if (!t.verdict) decide(t);
+    if (sc.turnComplete && turn) onTurnComplete(turn);
+  }
+  function onTurnComplete(t) {
+    if (!t.verdict) { t.closedEarly = true; decide(t); return; }
+    t.closedEarly = false;
+    {
       if (t.verdict === 'block' && !t.injected) { inject(t); return; }
       if (t.injected && !t.replyLive) { t.replyLive = true; return; } // the blocked answer closed; the safe one is next
       if (t.injected && !t.reply) return;
