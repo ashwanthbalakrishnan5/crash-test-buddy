@@ -19,6 +19,8 @@ export const TOPICS = [
   { id: 'sad', icon: 'sad', label: 'Sad days' },
   { id: 'grown', icon: 'noentry', label: 'Grown-up stuff' },
 ];
+// Before vs After bars, shared with the landing page
+export const SDK_ROWS = [{ label: 'Without the SDK', grade: 'D', percent: 73 }, { label: 'With the SDK', grade: 'A', percent: 99 }];
 const ROUND_RESULTS = { 1: ['unsafe', 'unsafe', 'careful', 'unsafe', 'careful', 'safe'], 2: ['safe', 'safe', 'safe', 'safe', 'safe', 'safe'] };
 export const FLOW = [{ id: 'talk', icon: 'shield', label: 'Talk' }, { id: 'crash', icon: 'test', label: 'Test' }, { id: 'report', icon: 'star', label: 'Grade' }];
 export const MENU = [{ id: 'home', label: 'Home', icon: 'house' }, { id: 'ships', label: 'Shipments', icon: 'box' }];
@@ -162,10 +164,10 @@ export function Talk({ go }) {
       <div className="talk-controls rise" style={{ '--d': '220ms' }}>
         <div className="talk-helper">
           <Buddy key={on ? 'c' : 's'} pose={on ? 'cheer' : 'shield'} mood={on || phase !== 'done' ? 'happy' : 'worried'} size={112} title="Buddy" />
-          <SpeechBubble key={on ? 'yes' : 'no'} from="toy" className="helper-bubble">{on ? 'Yay! Now it’s safe.' : 'Turn on the shield!'}</SpeechBubble>
+          <SpeechBubble key={on ? 'yes' : 'no'} from="toy" className="helper-bubble">{on ? 'Yay! Now it’s safe.' : 'Turn on the Safety SDK!'}</SpeechBubble>
           {!on && <span className="hint-arrow" aria-hidden="true"><Icon name="next" size={44} /></span>}
         </div>
-        <ShieldSwitch on={on} onChange={flip} />
+        <ShieldSwitch on={on} onChange={flip} label="Safety SDK" />
         <div className="talk-next">
           <BigButton variant={on ? 'primary' : 'secondary'} pulse={on && phase === 'done'} iconRight="next" onClick={() => go('crash')}>Next: Crash test</BigButton>
         </div>
@@ -212,7 +214,7 @@ export function Crash({ go, fast }) {
       <ScreenHead title="Crash test" go={go} back="talk" step={2} extra={
         <span className={cx('round-chip', round === 2 && 'is-on')} key={round}>
           <Icon name={round === 2 ? 'shield' : 'shield-off'} size={40} />
-          <span className="label">{round === 1 ? 'Round 1: No shield' : 'Round 2: Shield on'}</span>
+          <span className="label">{round === 1 ? 'Round 1: No SDK' : 'Round 2: SDK on'}</span>
         </span>} />
       <div className={cx('belt rise', round === 2 && 'is-r2', phase !== 'run' && 'is-paused')} style={{ '--d': '100ms' }}>
         <span className="belt-buddy"><Buddy key={phase === 'done' ? 'yay' : 'go'} pose={phase === 'done' ? 'cheer' : 'shield'} size={68} title="Buddy" /></span>
@@ -231,7 +233,7 @@ export function Crash({ go, fast }) {
         <div className="belt-track" aria-hidden="true"><span className="belt-stripes" /></div>
         <div className="belt-rollers" aria-hidden="true" />
         {phase === 'between' && (
-          <div className="belt-banner"><span className="banner-pill"><Icon name="shield" size={48} /><span className="heading">Now add the Safety Shield!</span></span></div>
+          <div className="belt-banner"><span className="banner-pill"><Icon name="shield" size={48} /><span className="heading">Now add the Safety SDK!</span></span></div>
         )}
         {phase === 'done' && <Burst count={40} spread={320} />}
       </div>
@@ -265,12 +267,12 @@ export function Report({ go }) {
           </div>
           <div className="report-toy">
             <ToyFriend kind="bear" size={96} shielded />
-            <div><div className="heading">Cuddle Bear</div><div className="body soft">with Safety Shield</div></div>
+            <div><div className="heading">Cuddle Bear</div><div className="body soft">with the Safety SDK</div></div>
           </div>
         </div>
         <div className="card report-ba rise" style={{ '--d': '200ms' }}>
           <h2 className="heading">Before vs After</h2>
-          <BeforeAfter />
+          <BeforeAfter rows={SDK_ROWS} />
         </div>
       </div>
       <h2 className="heading rise fixes-title" style={{ '--d': '400ms' }}><Icon name="sparkle" size={40} />What we fixed</h2>
@@ -325,7 +327,7 @@ export function Ships({ ships, setShips }) {
         <div className="ships-title">
           <span className="kicker small"><Icon name="box" size={30} />For importers</span>
           <h1 className="title screen-title" tabIndex={-1}>Shipments</h1>
-          <p className="body soft">Toys waiting at the border</p>
+          <p className="body soft">Every shipment checked again at the border</p>
         </div>
         <div className="ships-count" aria-live="polite">
           <Icon name="truck" size={56} />
@@ -343,7 +345,7 @@ export function Ships({ ships, setShips }) {
         </div>
       )}
       <div className="ships-grid">
-        {ships.map((s, i) => <ShipmentBox key={s.id} {...s} delay={120 + i * 130} onAddShield={() => add(s.id)} />)}
+        {ships.map((s, i) => <ShipmentBox key={s.id} {...s} delay={120 + i * 130} actionLabel="Add Safety SDK" onAddShield={() => add(s.id)} />)}
       </div>
     </section>
   );

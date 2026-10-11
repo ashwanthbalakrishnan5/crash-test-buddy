@@ -2,7 +2,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Icon, Buddy, ToyFriend, FamilyArt, StatusTag, GradeSticker, ShieldSwitch, BeforeAfter, cx, prefersReduced } from '../ds.js';
 import { Link, navigate } from '../router.jsx';
-import { QUESTIONS, ParentPage } from '../app/screens.jsx';
+import { QUESTIONS, SDK_ROWS, ParentPage } from '../app/screens.jsx';
 import '../app/app.css'; // ParentPage's styles
 import './landing.css';
 
@@ -113,7 +113,7 @@ function Hero({ phone }) {
               {['Is', 'this', 'toy', 'safe?'].map((w, i) => <span key={w} className={cx('lp-word', i === 3 && 'lp-word--key')} style={{ '--i': i }}>{w}</span>)}
             </span>
           </h1>
-          <p className="lead lp-soft lp-in" style={{ '--i': 4 }}>We test talking toys before kids hear them.</p>
+          <p className="lead lp-soft lp-in" style={{ '--i': 4 }}>A safety SDK for talking toys.</p>
           <div className="lp-ctas lp-in" style={{ '--i': 5 }} data-cta>
             <CTA to="/app" icon="next">Try the prototype</CTA>
             <CTA to="/app?tour=1" variant="secondary" icon="play">Watch how it works</CTA>
@@ -143,7 +143,7 @@ function Problem() {
     <section className="lp-sec" aria-labelledby="lp-problem">
       <div className="lp-wrap">
         <Reveal as="h2" id="lp-problem" className="title lp-h2 lp-center">Talking toys can say scary things.</Reveal>
-        <Reveal i={1} className="lp-switch"><ShieldSwitch on={on} onChange={flip} /></Reveal>
+        <Reveal i={1} className="lp-switch"><ShieldSwitch on={on} onChange={flip} label="Safety SDK" /></Reveal>
         <div className={cx('lp-asks', on && 'is-on')}>
           {ASKS.map((a, i) => (
             <Reveal key={a.toy} i={i + 2} className="lp-ask-wrap">
@@ -175,7 +175,7 @@ function Problem() {
 
 const STEPS = [
   { icon: 'test', label: 'Test it', line: 'We ask 100 tricky questions.', to: '/app/crash-test', tone: 'sun-soft' },
-  { icon: 'shield', label: 'Protect it', line: 'The Safety Shield checks every answer.', to: '/app/talk', tone: 'sky-soft' },
+  { icon: 'shield', label: 'Protect it', line: 'The Safety SDK checks every answer.', to: '/app/talk', tone: 'sky-soft' },
   { icon: 'phone', label: 'Check it', line: 'Parents scan the grade on the box.', to: '/app/scan', tone: 'safe-soft' },
 ];
 function How() {
@@ -201,7 +201,7 @@ function Live({ phone }) {
       <div className="lp-wrap">
         <Reveal className="lp-live">
           <div className="lp-live-words">
-            <h2 id="lp-live" className="title lp-h2">Talk to a toy. <span className="lp-sun">Watch the shield.</span></h2>
+            <h2 id="lp-live" className="title lp-h2">Talk to a toy. <span className="lp-sun">Watch the SDK work.</span></h2>
             <CTA to="/app/toy" icon="mic">Start talking</CTA>
           </div>
           <div className="lp-live-art" aria-hidden="true">
@@ -230,7 +230,7 @@ function Grade() {
       <div className="lp-wrap lp-grade">
         <div className="lp-grade-words">
           <Reveal as="h2" id="lp-grade" className="title lp-h2">Every toy gets a grade.</Reveal>
-          <Reveal i={1}><div className="lp-bars" ref={barsRef}>{bars && <BeforeAfter />}</div></Reveal>
+          <Reveal i={1}><div className="lp-bars" ref={barsRef}>{bars && <BeforeAfter rows={SDK_ROWS} />}</div></Reveal>
         </div>
         <Reveal i={2} className="lp-phone-wrap">
           <div className="lp-phone" ref={phoneRef}>
@@ -246,15 +246,15 @@ function Grade() {
 }
 
 const WHO = [
-  { label: 'Parents', line: 'Know it’s safe before you buy.', to: '/app/scan', tone: 'sky-soft', tilt: -1.5, art: <FamilyArt family="mom-kid" size={170} /> },
-  { label: 'Importers', line: 'Fix whole shipments at the border.', to: '/app/shipments', tone: 'sun-soft', tilt: 1, art: <span className="lp-ship"><Icon name="box" size={64} /><Icon name="truck" size={116} /></span> },
-  { label: 'Toy makers', line: 'See what to fix before it ships.', to: '/app/report-card', tone: 'safe-soft', tilt: -1, art: <ToyFriend kind="robot" size={112} /> },
+  { label: 'Toy makers', line: 'License the SDK. Build it in.', to: '/app/crash-test', tone: 'safe-soft', tilt: -1, art: <ToyFriend kind="robot" size={112} /> },
+  { label: 'Importers', line: 'License it. Recheck every shipment.', to: '/app/shipments', tone: 'sun-soft', tilt: 1, art: <span className="lp-ship"><Icon name="box" size={64} /><Icon name="truck" size={116} /></span> },
+  { label: 'Parents', line: 'Always free. Just scan the box.', to: '/app/scan', tone: 'sky-soft', tilt: -1.5, art: <FamilyArt family="mom-kid" size={170} /> },
 ];
 function Who() {
   return (
     <section className="lp-sec" aria-labelledby="lp-who">
       <div className="lp-wrap">
-        <Reveal as="h2" id="lp-who" className="title lp-h2 lp-center">Who it helps</Reveal>
+        <Reveal as="h2" id="lp-who" className="title lp-h2 lp-center">Who pays?</Reveal>
         <ul className="lp-grid lp-who">
           {WHO.map((w, i) => <Reveal as="li" key={w.label} i={i + 1}><CardLink {...w} /></Reveal>)}
         </ul>
@@ -281,7 +281,7 @@ function Footer() {
   return (
     <footer className="lp-foot">
       <div className="lp-wrap lp-foot-in">
-        <span className="lp-foot-brand"><Buddy crop="head" size={40} title="" />Crash Test Buddy</span>
+        <span className="lp-foot-brand"><Buddy crop="head" size={40} title="" /><span>Crash Test Buddy<span className="lp-foot-team small lp-soft">by Team Hand in Hand</span></span></span>
         <a className="lp-foot-link" href="https://github.com/ashwanthbalakrishnan5/crash-test-buddy" target="_blank" rel="noopener">
           Code on GitHub<span className="ctb-sr"> (opens in a new tab)</span>
         </a>
