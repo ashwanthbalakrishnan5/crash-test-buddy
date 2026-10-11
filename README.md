@@ -29,10 +29,14 @@ npm run build      # static files in site/dist
 npm run lint
 ```
 
-### Host on Cloudflare Pages
+### Hosting (Cloudflare Pages)
 
-- **Git (dashboard):** Workers & Pages → Create → Pages → connect this repo. Set Root directory `site`, Build command `npm run build`, Build output `dist`. The Node version comes from `site/.node-version`.
-- **CLI:** `cd site && npx wrangler login && npm run deploy`. This builds the site and runs `wrangler pages deploy`, reading `site/wrangler.toml`.
+Live at **https://crash-test-buddy.pages.dev**. The Pages project `crash-test-buddy` is connected to this repo (Root directory `site`, Build command `npm run build`, Build output `dist`; the Node version comes from `site/.node-version`):
+
+- A push to `main` deploys to production.
+- A push to any other branch gets its own preview URL.
+
+You can still deploy by hand with `cd site && npx wrangler login && npm run deploy`.
 
 There is no `404.html`, so Pages serves `index.html` for every path and links like `/app/talk` work. `site/public/_headers` caches the hashed assets.
 
