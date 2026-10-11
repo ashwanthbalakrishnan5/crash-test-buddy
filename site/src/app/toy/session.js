@@ -133,6 +133,8 @@ export function createLiveToy(ui) {
       if (t.injected && !t.reply) return;
       t.done = true;
       emit();
+      // SDK off: the same check runs only to label the answer for the audience; nothing is blocked
+      if (!t.sdk && t.kind !== 'hello' && t.toy) check(t.child, t.toy).then((v) => { if (closed) return; t.label = v.risky ? v.risk : 'safe'; emit(); });
     }
   }
 

@@ -3,7 +3,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Icon, ToyFriend, StatusTag, BigButton, ShieldSwitch, Burst, cx } from '../../ds.js';
 import { createLiveToy } from './session.js';
-import { checkQuestion, checkAnswer } from './sdk.js';
 import './live.css';
 
 const ERRORS = {
@@ -13,12 +12,6 @@ const ERRORS = {
 };
 const PHASE = { listening: ['mic', 'Listening…'], thinking: ['sparkle', 'Thinking…'], checking: ['shield', 'Checking…'], talking: ['heart', 'Talking…'] };
 
-// how a toy answer reads when the SDK is off: the same check, shown but not acted on
-const looseStatus = (t) => {
-  const q = checkQuestion(t.child);
-  if (q.risky) return q.risk;
-  return checkAnswer(t.toy) ? 'unsafe' : 'safe';
-};
 
 export default function LiveDemo() {
   const [status, setStatus] = useState('idle'); // idle · connecting · live · error
@@ -112,7 +105,7 @@ function Turn({ t }) {
             {t.blocked ? <><span className="ctb-sr">Blocked by the Safety SDK: </span><s>{t.toy}</s></> : t.toy}
           </p>
           {t.blocked ? <StatusTag status={t.risk} className="lv-tag" />
-            : t.done && t.kind !== 'hello' && <StatusTag status={t.sdk ? 'safe' : looseStatus(t)} className="lv-tag" />}
+            : t.done && t.kind !== 'hello' && (t.sdk || t.label) && <StatusTag status={t.sdk ? 'safe' : t.label} className="lv-tag" />}
         </li>
       )}
       {t.reply && (
