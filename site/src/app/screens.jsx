@@ -281,7 +281,6 @@ export function Report({ go }) {
       </div>
       <div className="screen-foot">
         <BigButton icon="house" onClick={() => go('home')}>Back home</BigButton>
-        <BigButton variant="quiet" size="md" icon="refresh" onClick={() => go('crash')}>Test again</BigButton>
       </div>
     </section>
   );
@@ -314,8 +313,14 @@ export function Ships({ ships, setShips }) {
   };
   const safe = ships.filter((s) => s.status === 'safe').length;
   const all = safe === ships.length;
+  // the win shows above the boxes, so scroll back up to it when it happens
+  const topRef = useRef(null), wasAll = useRef(all);
+  useEffect(() => {
+    if (all && !wasAll.current && topRef.current) topRef.current.scrollIntoView({ block: 'start', behavior: calm ? 'auto' : 'smooth' });
+    wasAll.current = all;
+  }, [all]);
   return (
-    <section className="ships">
+    <section className="ships" ref={topRef}>
       <div className="ships-head rise">
         <div className="ships-title">
           <span className="kicker small"><Icon name="box" size={30} />For importers</span>
@@ -328,7 +333,6 @@ export function Ships({ ships, setShips }) {
             <div className="small soft">Safe to ship</div>
             <div className="heading"><span className="ships-num" key={safe}>{safe}</span> of {ships.length}</div>
           </div>
-          <span className="ships-dots" aria-hidden="true">{ships.map((s) => <i key={s.id} className={s.status === 'safe' ? 'is-on' : ''} />)}</span>
         </div>
       </div>
       {all && (
