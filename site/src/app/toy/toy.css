@@ -137,7 +137,8 @@
   .lt-toys { gap: var(--space-4); }
   .lt .lt-toycard { padding: var(--space-4) var(--space-2) var(--space-3); }
   .lt .lt-toycard .ctb-toy { width: 96px; height: auto; }
-  .lt .lt-stage { grid-template-columns: auto minmax(0, 1fr); column-gap: var(--space-3); row-gap: var(--space-2); padding: var(--space-3); }
+  /* the toy name is wider than the toy: it gets its own row so the switch keeps its full width */
+  .lt .lt-stage { grid-template-columns: auto auto; grid-template-areas: "toy shield" "toy count" "name name"; column-gap: var(--space-4); row-gap: var(--space-2); padding: var(--space-3); }
   .lt .lt-stage .ctb-toy { width: 104px; height: auto; }
   .lt .lt-name { padding-left: var(--space-4); }
   .lt .lt-name .label { font-size: 20px; }
@@ -157,3 +158,5 @@
   .lt .lt-send .ctb-btn-icon--right { margin: 0; }
   .lt .lt-send .ctb-btn-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 }
+/* nothing to count yet: keep the space so the card doesn’t jump when the first catch lands */
+.lt-count.is-empty { visibility: hidden; }

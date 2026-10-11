@@ -254,7 +254,7 @@ export default function LiveToy({ go }) {
                 <span className="label">{name}</span><Chevron />
               </button>
               <ShieldSwitch on={shield} onChange={setShield} />
-              <p className="lt-count label" aria-live="polite">
+              <p className={cx('lt-count label', !caught && 'is-empty')} aria-live="polite">
                 <Icon name="shield" size={32} />Caught: <span className={cx('lt-num', caught > 0 && 'is-pop')} key={caught}>{caught}</span>
               </p>
             </div>

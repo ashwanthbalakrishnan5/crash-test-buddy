@@ -23,7 +23,7 @@ body { background: var(--paper); -webkit-font-smoothing: antialiased; }
 
 /* buttons: a hard shadow they press down into */
 .ctb-btn--primary, .ctb-btn--secondary { border: 3px solid var(--ink); box-shadow: var(--shadow-button);
-  transition: transform 150ms var(--ease-out), box-shadow 150ms var(--ease-out), background-color 150ms ease; }
+  transition: transform 150ms var(--ease-out), box-shadow 150ms var(--ease-out), background-color 150ms ease, color 150ms ease; }
 .ctb-btn--secondary { color: var(--sky-deep); }
 .ctb-btn--secondary .ctb-btn-icon, .ctb-btn--primary .ctb-btn-icon { box-shadow: 0 0 0 3px var(--ink); }
 /* keep the ringed icon clear of the 3px border: same gap all round */

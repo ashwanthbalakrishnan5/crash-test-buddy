@@ -3,13 +3,14 @@ import { useState, useEffect, useRef, useLayoutEffect } from 'react';
 import { MotionProvider, Icon, Buddy, Burst, BigButton, TopMenu, cx, prefersReduced } from '../ds.js';
 import { navigate, usePath } from '../router.jsx';
 import { Home, Talk, Crash, Report, Ships, Scan, Hand, MENU, TOUR, CANCEL, START_SHIPS } from './screens.jsx';
+import LiveToy from './toy/LiveToy.jsx';
 import './app.css';
 
 // screen id -> URL under /app
-const SLUGS = { home: '', talk: 'talk', crash: 'crash-test', report: 'report-card', ships: 'shipments', scan: 'scan' };
+const SLUGS = { home: '', talk: 'talk', crash: 'crash-test', report: 'report-card', ships: 'shipments', scan: 'scan', toy: 'toy' };
 const toPath = (r) => '/app' + (SLUGS[r] ? '/' + SLUGS[r] : '');
 const fromPath = (p) => Object.keys(SLUGS).find((r) => toPath(r) === p.replace(/\/+$/, '')) || null;
-const NAV = [...MENU, { id: 'site', label: 'About', icon: 'heart' }];
+const NAV = [MENU[0], { id: 'toy', label: 'Live toy', icon: 'mic' }, ...MENU.slice(1), { id: 'site', label: 'About', icon: 'heart' }];
 
 /* ───────── backdrop ───────── */
 const SHAPES = [
@@ -227,7 +228,7 @@ export default function App() {
 
   const screens = {
     home: <Home go={go} narrow={narrow} startTour={startTour} />, talk: <Talk go={go} />, crash: <Crash go={go} fast={!!(tour && !tour.end)} />, report: <Report go={go} />,
-    ships: <Ships ships={ships} setShips={setShips} />, scan: <Scan go={go} narrow={narrow} sheetRoot={sheetRoot} />,
+    ships: <Ships ships={ships} setShips={setShips} />, scan: <Scan go={go} narrow={narrow} sheetRoot={sheetRoot} />, toy: <LiveToy go={go} />,
   };
   return (
     <div className="proto">
@@ -242,7 +243,7 @@ export default function App() {
         <div className="proto-device">
           <MotionProvider calm={calm} className="app">
             <div ref={(el) => { appRef.current = el; innerRef.current = el; }} className="app-inner">
-              <TopMenu items={NAV} current={route === 'ships' ? 'ships' : route === 'home' ? 'home' : null} onSelect={go} calm={calm} onCalmChange={setCalm} />
+              <TopMenu items={NAV} current={['home', 'toy', 'ships'].includes(route) ? route : null} onSelect={go} calm={calm} onCalmChange={setCalm} />
               <div className={cx('app-body', tour && !tour.end && 'is-touring')} onPointerMove={onMove}>
                 <Backdrop innerRef={bdRef} />
                 <main className="app-scroll" ref={scrollRef}>
