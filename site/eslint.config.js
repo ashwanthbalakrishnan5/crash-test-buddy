@@ -6,7 +6,7 @@ export default [
   { ignores: ['dist', '.wrangler'] },
   js.configs.recommended,
   {
-    files: ['**/*.{js,jsx}'],
+    files: ['**/*.{js,jsx,mjs}'],
     languageOptions: { globals: { ...globals.browser, ...globals.node }, parserOptions: { ecmaFeatures: { jsx: true } } },
     plugins: { 'react-hooks': reactHooks },
     rules: {
