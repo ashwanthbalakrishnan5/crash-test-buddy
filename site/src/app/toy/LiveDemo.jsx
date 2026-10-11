@@ -28,10 +28,12 @@ export default function LiveDemo() {
   const [sdk, setSdk] = useState(false);
   const [text, setText] = useState('');
   const [micOff, setMicOff] = useState(false);
+  const [muted, setMuted] = useState(false);
   const toyRef = useRef(null), micRef = useRef(null), logRef = useRef(null);
 
   useEffect(() => () => toyRef.current && toyRef.current.stop(), []);
   useEffect(() => { toyRef.current && toyRef.current.setSdk(sdk); }, [sdk]);
+  useEffect(() => { toyRef.current && toyRef.current.setMuted(muted); }, [muted]);
   useEffect(() => { const el = logRef.current; if (el) el.scrollTop = el.scrollHeight; }, [turns]);
 
   const start = () => {
@@ -46,6 +48,7 @@ export default function LiveDemo() {
     toyRef.current = toy;
     setTurns([]);
     setMicOff(false);
+    setMuted(false);
     toy.start();
   };
   const stop = () => { toyRef.current && toyRef.current.stop(); toyRef.current = null; };
@@ -65,13 +68,16 @@ export default function LiveDemo() {
             <ToyFriend kind="bear" size={220} talking={talking} shielded={sdk} />
             {caught > 0 && <Burst key={caught} kind="sparkle" count={12} spread={190} />}
           </div>
-          {live && (micOff && phase === 'listening'
-            ? <p className="lv-phase label" aria-live="polite"><Icon name="mic" size={30} />Mic is off. Type instead.</p>
+          {live && ((micOff || muted) && phase === 'listening'
+            ? <p className="lv-phase label" aria-live="polite"><Icon name="mic" size={30} />{micOff ? 'Mic is off. Type instead.' : 'Muted'}</p>
             : <p className="lv-phase label" aria-live="polite"><Icon name={PHASE[phase][0]} size={30} />{PHASE[phase][1]}</p>)}
           {status === 'error' && <p className="lv-error body" role="alert">{ERRORS[error] || ERRORS.offline}</p>}
-          <div className="lv-mic" ref={micRef}>
+          <div className={cx('lv-mic', muted && 'is-muted')} ref={micRef}>
             {live
-              ? <BigButton variant="secondary" icon="close" onClick={stop}>Stop</BigButton>
+              ? <div className="lv-controls">
+                {!micOff && <BigButton variant="secondary" size="md" icon="mic" aria-pressed={muted} onClick={() => setMuted((m) => !m)}>{muted ? 'Unmute' : 'Mute'}</BigButton>}
+                <BigButton variant="secondary" size="md" icon="close" onClick={stop}>Stop</BigButton>
+              </div>
               : <BigButton icon="mic" onClick={start} disabled={status === 'connecting'}>{status === 'connecting' ? 'Connecting…' : 'Start talking'}</BigButton>}
           </div>
           <ShieldSwitch on={sdk} onChange={setSdk} label="Safety SDK" />

@@ -15,11 +15,11 @@ let uid = 0;
 
 /**
  * ui: { status(s, error?), turns(list), phase('listening' | 'thinking' | 'checking' | 'talking'), level(0..1), micOff() }
- * Returns { start(), stop(), ask(text), setSdk(on) }.
+ * Returns { start(), stop(), ask(text), setSdk(on), setMuted(on) }.
  */
 export function createLiveToy(ui) {
   let session = null, stopMic = null, player = null, ticker = 0;
-  let closed = false, sdk = false, turn = null, turns = [], phase = '';
+  let closed = false, sdk = false, muted = false, turn = null, turns = [], phase = '';
 
   const emit = () => ui.turns(turns.map((t) => ({ ...t, queue: undefined })));
   const newTurn = (kind, child = '') => {
@@ -135,7 +135,7 @@ export function createLiveToy(ui) {
   const busy = () => player.left() > 0.05 || (turn && turn.answering && !turn.done);
   function onChunk(pcm) {
     if (!session || closed) return;
-    session.sendRealtimeInput({ audio: { data: busy() ? SILENCE : toBase64(pcm), mimeType: MIME } });
+    session.sendRealtimeInput({ audio: { data: muted || busy() ? SILENCE : toBase64(pcm), mimeType: MIME } });
   }
   function tick() {
     const t = turn;
@@ -163,6 +163,8 @@ export function createLiveToy(ui) {
 
   return {
     setSdk(on) { sdk = !!on; },
+    /** Muted: the toy hears silence, so the presenter can talk to the room. */
+    setMuted(on) { muted = !!on; },
     /** Call from a tap: the browser only lets sound start inside one. */
     async start() {
       closed = false;

@@ -16,7 +16,9 @@
 .lv-error { color: var(--danger); font-weight: 800; }
 /* the mic button breathes with your voice */
 .lv-mic { --lv: 0; position: relative; display: grid; place-items: center; }
-.lv-main.is-live .lv-mic::before { content: ''; position: absolute; inset: -8px; border-radius: var(--radius-pill); border: 4px solid var(--safe);
+.lv-controls { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--space-3); }
+.lv-mic.is-muted .ctb-btn[aria-pressed="true"] { background: var(--danger-soft); color: var(--danger); }
+.lv-main.is-live .lv-mic:not(.is-muted)::before { content: ''; position: absolute; inset: -8px; border-radius: var(--radius-pill); border: 4px solid var(--safe);
   opacity: calc(.2 + var(--lv) * .8); transform: scale(calc(1 + var(--lv) * .08)); transition: transform 90ms linear, opacity 90ms linear; pointer-events: none; }
 
 /* the conversation */
