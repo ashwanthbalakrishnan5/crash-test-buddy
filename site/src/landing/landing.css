@@ -18,6 +18,11 @@
   .lp-rv:not(.is-in) { opacity: 0; transform: translateY(12px); filter: blur(4px); }
 }
 
+/* hero entrance: plays on load, never waits for scrolling */
+.lp-in { animation: lp-fade 500ms var(--ease-out) both; animation-delay: calc(120ms + var(--i, 0) * 90ms); }
+@media (prefers-reduced-motion: no-preference) { .lp-in { animation-name: lp-rise; } }
+@keyframes lp-rise { from { opacity: 0; transform: translateY(12px); filter: blur(4px); } }
+
 /* buttons are the design system's BigButton, as links */
 .lp-cta { box-sizing: border-box; max-width: 100%; text-decoration: none; }
 .lp-ctas { display: flex; flex-wrap: wrap; gap: var(--space-4); }
@@ -30,6 +35,9 @@
   color: var(--ink); font: 800 24px/1 var(--font-display); text-decoration: none; white-space: nowrap; }
 .lp-brand .ctb-buddy { transition: rotate 300ms var(--ease-out); }
 @media (hover: hover) { .lp-brand:hover .ctb-buddy { rotate: -10deg; } }
+
+.lp-nav-cta { display: flex; transition: opacity 200ms var(--ease-out), transform 200ms var(--ease-out), visibility 0s; }
+.lp-nav-cta.is-hidden { opacity: 0; transform: translateY(-6px); visibility: hidden; transition-delay: 0s, 0s, 200ms; }
 
 /* ── hero ── */
 .lp-hero { padding-block: var(--space-12) 60px; }

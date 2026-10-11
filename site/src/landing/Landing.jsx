@@ -88,13 +88,13 @@ function CardLink({ to, tone, tilt = 0, art, label, line }) {
 const go = (to) => { navigate(to); window.scrollTo(0, 0); };
 
 /* ───────── sections ───────── */
-function Nav() {
+function Nav({ cta }) {
   const toTop = (e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: prefersReduced() ? 'auto' : 'smooth' }); };
   return (
     <header className="lp-nav">
       <div className="lp-wrap lp-nav-in">
         <a href="#top" className="lp-brand" onClick={toTop}><Buddy crop="head" size={44} title="" /><span className="lp-brand-name">Crash Test Buddy</span></a>
-        <CTA to="/app" size="md" icon="next" className="lp-nav-cta">Try the prototype</CTA>
+        <span className={cx('lp-nav-cta', !cta && 'is-hidden')}><CTA to="/app" size="md" icon="next">Try the prototype</CTA></span>
       </div>
     </header>
   );
@@ -113,18 +113,18 @@ function Hero({ phone }) {
               {['Is', 'this', 'toy', 'safe?'].map((w, i) => <span key={w} className={cx('lp-word', i === 3 && 'lp-word--key')} style={{ '--i': i }}>{w}</span>)}
             </span>
           </h1>
-          <Reveal as="p" i={4} className="lead lp-soft">We test talking toys before kids hear them.</Reveal>
-          <Reveal i={5} className="lp-ctas">
+          <p className="lead lp-soft lp-in" style={{ '--i': 4 }}>We test talking toys before kids hear them.</p>
+          <div className="lp-ctas lp-in" style={{ '--i': 5 }} data-cta>
             <CTA to="/app" icon="next">Try the prototype</CTA>
             <CTA to="/app?tour=1" variant="secondary" icon="play">Watch how it works</CTA>
-          </Reveal>
+          </div>
         </div>
-        <Reveal i={2} className="lp-stage" aria-hidden="true">
+        <div className="lp-stage lp-in" style={{ '--i': 2 }} aria-hidden="true">
           <span className="lp-stage-sun" data-depth="6" />
           <span className="lp-stage-buddy" data-depth="12"><Buddy pose="wave" size={phone ? 220 : 320} track title="" /></span>
           <span className="lp-stage-grade" data-depth="28"><span className="lp-bob"><GradeSticker grade="A" size={phone ? 'sm' : 'md'} word={false} tilt={8} delay={500} /></span></span>
           <span className="lp-stage-tag" data-depth="20"><span className="lp-bob"><StatusTag status="safe" size="lg" stamp /></span></span>
-        </Reveal>
+        </div>
       </div>
     </section>
   );
@@ -182,7 +182,7 @@ function How() {
   return (
     <section className="lp-sec" aria-labelledby="lp-how">
       <div className="lp-wrap">
-        <Reveal as="h2" id="lp-how" className="title lp-h2 lp-center">How it works.</Reveal>
+        <Reveal as="h2" id="lp-how" className="title lp-h2 lp-center">How it works</Reveal>
         <ol className="lp-grid lp-steps">
           {STEPS.map((s, i) => (
             <Reveal as="li" key={s.label} i={i + 1}>
@@ -202,7 +202,7 @@ function Live({ phone }) {
         <Reveal className="lp-live">
           <div className="lp-live-words">
             <h2 id="lp-live" className="title lp-h2">Talk to a toy. <span className="lp-sun">Watch the shield.</span></h2>
-            <CTA to="/app/toy" icon="mic">Talk to a toy</CTA>
+            <CTA to="/app/toy" icon="mic">Start talking</CTA>
           </div>
           <div className="lp-live-art" aria-hidden="true">
             <span className="lp-live-spot" />
@@ -254,7 +254,7 @@ function Who() {
   return (
     <section className="lp-sec" aria-labelledby="lp-who">
       <div className="lp-wrap">
-        <Reveal as="h2" id="lp-who" className="title lp-h2 lp-center">Who it helps.</Reveal>
+        <Reveal as="h2" id="lp-who" className="title lp-h2 lp-center">Who it helps</Reveal>
         <ul className="lp-grid lp-who">
           {WHO.map((w, i) => <Reveal as="li" key={w.label} i={i + 1}><CardLink {...w} /></Reveal>)}
         </ul>
@@ -270,7 +270,7 @@ function Final({ phone }) {
         <Reveal className="lp-final">
           <Buddy pose="cheer" size={phone ? 130 : 170} title="" />
           <h2 id="lp-final" className="title lp-h2">Ready to meet Buddy?</h2>
-          <CTA to="/app" icon="next">Try the prototype</CTA>
+          <span data-cta><CTA to="/app" icon="next">Try the prototype</CTA></span>
         </Reveal>
       </div>
     </section>
@@ -290,11 +290,29 @@ function Footer() {
   );
 }
 
+// True while none of the page's main "Try the prototype" buttons are on screen.
+function useNavCta() {
+  const [show, setShow] = useState(false);
+  useEffect(() => {
+    const els = document.querySelectorAll('.lp [data-cta]');
+    if (!window.IntersectionObserver || !els.length) return undefined;
+    const seen = new Set();
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => (e.isIntersecting ? seen.add(e.target) : seen.delete(e.target)));
+      setShow(seen.size === 0);
+    }, { rootMargin: '-80px 0px 0px 0px' });
+    els.forEach((el) => io.observe(el));
+    return () => io.disconnect();
+  }, []);
+  return show;
+}
+
 export default function Landing() {
   const phone = useMedia('(max-width: 640px)');
+  const navCta = useNavCta();
   return (
     <div className="lp" id="top">
-      <Nav />
+      <Nav cta={navCta} />
       <main>
         <Hero phone={phone} />
         <Problem />
