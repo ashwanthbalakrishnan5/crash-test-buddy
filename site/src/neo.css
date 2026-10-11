@@ -1,0 +1,55 @@
+/* Neo shell, design-system soul.
+   Same colors, fonts, radii and Buddy as the design system; depth becomes hard ink offsets
+   and soft outlines become ink, like neobrutalism. Loaded after bundle.css. */
+
+:root {
+  --shadow-soft: 4px 4px 0 0 var(--ink);
+  --shadow-lift: 8px 8px 0 0 var(--ink);
+  --shadow-button: 4px 4px 0 0 var(--ink);
+  --shadow-button-light: 4px 4px 0 0 var(--ink);
+  --shadow-sticker: 3px 3px 0 0 var(--ink);
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --dots: radial-gradient(color-mix(in srgb, var(--ink) 13%, transparent) 1.3px, transparent 1.6px) 0 0 / 24px 24px;
+  color-scheme: light;
+}
+html { -webkit-text-size-adjust: 100%; }
+body { background: var(--paper); -webkit-font-smoothing: antialiased; }
+::selection { background: var(--sun); color: var(--ink); }
+
+/* ink outlines where the design system used the soft `line` color */
+.card, .talk-stage, .belt, .ctb-fix, .ctb-fact, .ctb-menu-sheet, .ctb-menu-item, .choice, .parent-head, .ships-count,
+.tour-end-card, .qchip, .talk-toyname, .ctb-nav, .ctb-calm-toggle, .flow-pic, .ctb-tile--waiting, .ctb-top { border-color: var(--ink); }
+.ctb-top { background: color-mix(in srgb, var(--card) 92%, transparent); }
+.app-body { background: var(--dots); }
+
+/* buttons: a hard shadow they press down into */
+.ctb-btn--primary, .ctb-btn--secondary { border: 3px solid var(--ink); box-shadow: var(--shadow-button);
+  transition: transform 150ms var(--ease-out), box-shadow 150ms var(--ease-out), background-color 150ms ease; }
+.ctb-btn--secondary { color: var(--sky-deep); }
+.ctb-btn--secondary .ctb-btn-icon, .ctb-btn--primary .ctb-btn-icon { box-shadow: 0 0 0 3px var(--ink); }
+.ctb-btn:hover { transform: none; }
+@media (hover: hover) {
+  .ctb-btn--primary:hover, .ctb-btn--secondary:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 0 var(--ink); }
+}
+.ctb-btn--primary:not(:disabled):active, .ctb-btn--secondary:not(:disabled):active { transform: translate(4px, 4px); box-shadow: 0 0 0 0 var(--ink); }
+.ctb-btn--secondary:focus-visible { box-shadow: var(--shadow-button), var(--focus-ring); }
+
+/* tiles, steps, sheets: lift on hover with a longer ink shadow */
+.ctb-step { box-shadow: 6px 6px 0 0 var(--ink); }
+@media (hover: hover) { .ctb-step:hover { box-shadow: 10px 10px 0 0 var(--ink); } }
+.ctb-tile--testing { box-shadow: 6px 6px 0 0 var(--ink); }
+.ctb-ship--safe .ctb-ship-box { box-shadow: var(--shadow-soft), var(--glow-shield); }
+.ctb-switch { border-color: var(--ink); }
+.ctb-switch-thumb { box-shadow: 0 0 0 3px var(--ink); }
+.ctb-nav-pill { box-shadow: 0 0 0 3px var(--ink); }
+.sheet { border: 3px solid var(--ink); border-bottom: 0; }
+.phone-frame { box-shadow: 10px 10px 0 0 var(--ink); }
+
+/* the frame around the app on laptop */
+.proto { background: var(--paper) var(--dots); }
+.proto-device { border-color: var(--ink); box-shadow: 8px 8px 0 0 var(--ink); }
+.proto-seg, .proto-restart { border-color: var(--ink); box-shadow: var(--shadow-soft); }
+.proto-restart { transition: transform 150ms var(--ease-out), box-shadow 150ms var(--ease-out); }
+.proto-restart:not(:disabled):active { transform: translate(4px, 4px); box-shadow: none; }
+@media (max-width: 760px) { .proto-live { display: none; } }
+@media (max-width: 520px) { .proto-device { box-shadow: none; } }

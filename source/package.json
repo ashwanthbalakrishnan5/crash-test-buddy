@@ -1,0 +1,17 @@
+{
+  "name": "crash-test-buddy",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "node build.mjs",
+    "svgs": "node export_svgs.cjs",
+    "single": "node make_standalone.cjs prototype.html"
+  },
+  "devDependencies": {
+    "@fontsource/baloo-2": "5.1.0",
+    "@fontsource/nunito": "5.1.0",
+    "esbuild": "0.24.0",
+    "react": "18.3.1",
+    "react-dom": "18.3.1"
+  }
+}

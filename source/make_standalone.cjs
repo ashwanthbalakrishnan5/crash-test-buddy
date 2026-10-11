@@ -1,0 +1,16 @@
+const fs = require('fs');
+const prev = fs.readFileSync('out/project/components/Prototype/preview.html', 'utf8').replace(/^<!--.*?-->\n/, '');
+const tokens = fs.readFileSync('test/tokens.css', 'utf8');
+const css = fs.readFileSync('out/project/components/bundle.css', 'utf8').replace(/^@import[^\n]*\n/, '');
+const r = fs.readFileSync('node_modules/react/umd/react.production.min.js', 'utf8');
+const rd = fs.readFileSync('node_modules/react-dom/umd/react-dom.production.min.js', 'utf8');
+const b = fs.readFileSync('out/project/components/bundle.js', 'utf8');
+const must = (html, needle) => { if (!html.includes(needle)) throw new Error('missing ' + needle); return html; };
+let html = prev;
+html = must(html, '<html lang="en">').replace('<html lang="en">', () => '<html lang="en" data-theme="toybox">');
+html = must(html, '<title>Crash Test Buddy — clickable prototype</title>').replace('<title>Crash Test Buddy — clickable prototype</title>', () => '<title>Crash Test Buddy</title>');
+html = must(html, '<style>\n').replace('<style>\n', () => '<style>\n/* tokens */\n' + tokens + '\n/* components */\n' + css + '\n/* prototype */\n');
+const anchor = '<div id="root"></div>\n<script>';
+html = must(html, anchor).replace(anchor, () => '<div id="root"></div>\n<script>' + r + '</script>\n<script>' + rd + '</script>\n<script>' + b + '</script>\n<script>');
+fs.writeFileSync(process.argv[2], html);
+console.log(html.length);

@@ -1,0 +1,2 @@
+Made Crash Test Buddy: a crash test for AI toys. It tests talking toys, adds a Safety Shield that checks every answer before a kid hears it, and puts the grade on the box.
+Because no teddy bear should know where the matches are.

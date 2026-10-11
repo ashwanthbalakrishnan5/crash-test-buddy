@@ -1,0 +1,4 @@
+# Cloudflare Pages: static build, no backend. No 404.html, so Pages serves index.html for /app/* (SPA mode).
+name = "crash-test-buddy"
+pages_build_output_dir = "./dist"
+compatibility_date = "2026-10-01"

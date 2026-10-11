@@ -1,0 +1,65 @@
+<!-- @dsCard height=288 -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Crash Test Buddy</title>
+<style>
+  html, body { margin: 0; height: 100%; }
+  body { background: var(--paper); color: var(--ink); font-family: var(--font-body); overflow: hidden; }
+  .cover { position: relative; height: 288px; overflow: hidden; }
+  .art { position: absolute; top: 0; left: 480px; width: 480px; height: 288px; overflow: hidden; }
+  .art svg { display: block; width: 480px; height: 288px; }
+  .sky { fill: var(--sky); }
+  .sun { fill: var(--sun); }
+  .honey { fill: var(--honey); }
+  .deep { fill: var(--ink); }
+  .safe { fill: var(--safe); }
+  .q-sun { fill: var(--sun); }
+  .q-deep { fill: var(--ink); }
+  .q-card { fill: var(--card); }
+  .r-xl { rx: var(--radius-xl); }
+  .r-lg { rx: var(--radius-lg); }
+  .r-md { rx: var(--radius-md); }
+  .words { position: absolute; left: var(--space-8); bottom: var(--space-8); max-width: 440px; }
+  .name { margin: 0; font-family: var(--font-display); font-size: 72px; line-height: .95; font-weight: 800; letter-spacing: -0.01em; color: var(--ink); }
+  .tag { margin: var(--space-2) 0 0 2px; font-size: 14px; line-height: 20px; font-weight: 700; color: var(--ink-soft); }
+</style>
+</head>
+<body>
+<div class="cover">
+<div class="art" aria-hidden="true">
+<svg viewBox="480 0 480 288" width="480" height="288">
+<!--
+  blocks      sky 208×280 slab bled off the top (the Safety Shield, the primary) · sun 112×96 (Buddy's helmet) · ink 176×96 bleeding off the right edge · honey 64×96 (Buddy's fur) · safe 64×16 pill once (it only ever means "Safe") — ≈31% of 960×288
+  arrangement stacked toy blocks: one tall sky slab with satellites, bottoms on one line space-8 above the edge, space-4 gutters
+  pattern     crash-test targets, from Buddy's helmet decal and "everything rounded like a toy block": discs of radius space-6 cut into quarters, two quarters filled and two left as the block, at a space-16 pitch down the slab and one on each satellite
+  scales      sides in space-4 multiples; gutters space-4; pitch space-16; disc radius space-6; corners radius-xl (slab), radius-lg (sun, ink), radius-md (honey), pill rx half its space-4 height
+-->
+<rect class="honey r-md" x="496" y="160" width="64" height="96" rx="20"/>
+<rect class="safe" x="496" y="128" width="64" height="16" rx="8"/>
+<rect class="sky r-xl" x="576" y="-24" width="208" height="280" rx="40"/>
+<rect class="sun r-lg" x="800" y="48" width="112" height="96" rx="28"/>
+<rect class="deep r-lg" x="800" y="160" width="176" height="96" rx="28"/>
+<!-- targets on the slab: sun + ink quarters -->
+<g>
+  <path class="q-sun" d="M640 64 V40 A24 24 0 0 1 664 64 Z"/><path class="q-sun" d="M640 64 V88 A24 24 0 0 1 616 64 Z"/>
+  <path class="q-deep" d="M640 64 H616 A24 24 0 0 1 640 40 Z"/><path class="q-deep" d="M640 64 H664 A24 24 0 0 1 640 88 Z"/>
+  <path class="q-sun" d="M720 128 V104 A24 24 0 0 1 744 128 Z"/><path class="q-sun" d="M720 128 V152 A24 24 0 0 1 696 128 Z"/>
+  <path class="q-deep" d="M720 128 H696 A24 24 0 0 1 720 104 Z"/><path class="q-deep" d="M720 128 H744 A24 24 0 0 1 720 152 Z"/>
+  <path class="q-sun" d="M640 192 V168 A24 24 0 0 1 664 192 Z"/><path class="q-sun" d="M640 192 V216 A24 24 0 0 1 616 192 Z"/>
+  <path class="q-deep" d="M640 192 H616 A24 24 0 0 1 640 168 Z"/><path class="q-deep" d="M640 192 H664 A24 24 0 0 1 640 216 Z"/>
+</g>
+<!-- one target on each satellite, two quarters each -->
+<path class="q-deep" d="M856 96 V72 A24 24 0 0 1 880 96 Z"/><path class="q-deep" d="M856 96 V120 A24 24 0 0 1 832 96 Z"/>
+<path class="q-sun" d="M872 208 V184 A24 24 0 0 1 896 208 Z"/><path class="q-sun" d="M872 208 V232 A24 24 0 0 1 848 208 Z"/>
+<path class="q-card" d="M528 208 V184 A24 24 0 0 1 552 208 Z"/><path class="q-card" d="M528 208 V232 A24 24 0 0 1 504 208 Z"/>
+</svg>
+</div>
+<div class="words">
+<h1 class="name">Crash Test<br>Buddy</h1>
+<p class="tag">A crash test for AI toys, so simple a 5-year-old gets it.</p>
+</div>
+</div>
+</body>
+</html>

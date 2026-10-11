@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1920, height=1080">
+    <title>Crash Test Buddy — brag</title>
+    <script src="assets/js/gsap.min.js"></script>
+    <style>
+      @font-face { font-family: "Baloo 2"; font-weight: 700; src: url("assets/fonts/baloo-2-latin-700-normal.woff2") format("woff2"); }
+      @font-face { font-family: "Baloo 2"; font-weight: 800; src: url("assets/fonts/baloo-2-latin-800-normal.woff2") format("woff2"); }
+      @font-face { font-family: "Nunito"; font-weight: 700; src: url("assets/fonts/nunito-latin-700-normal.woff2") format("woff2"); }
+      @font-face { font-family: "Nunito"; font-weight: 800; src: url("assets/fonts/nunito-latin-800-normal.woff2") format("woff2"); }
+      @font-face { font-family: "Nunito"; font-weight: 900; src: url("assets/fonts/nunito-latin-900-normal.woff2") format("woff2"); }
+
+      :root {
+        --paper: #fff8ee; --card: #ffffff; --line: #eadfcc; --ink: #23203a; --ink-soft: #58526e;
+        --sky: #1b5fc4; --sky-deep: #144a99; --sky-soft: #e3edfc; --on-fill: #ffffff;
+        --sun: #ffc83d; --sun-soft: #fff3cc; --honey: #d48c4a; --honey-soft: #f6d3a8; --blush: #f4a3a8;
+        --kraft: #dcab6f; --kraft-deep: #b8844a; --tape: #f3dfb4;
+        --safe: #4fcf8a; --safe-ink: #0d6b45; --safe-soft: #ddf4e7;
+        --careful: #f5b800; --danger: #b8261c; --danger-soft: #fde3df;
+        --grade-b: #a3d955; --grade-d: #f08c2e;
+        --toy-pink: #eeaacd; --toy-steel: #a6bddb; --toy-mint: #93dcc6; --toy-peach: #f8be92; --toy-lilac: #c9b6f2;
+        --skin-2: #e8b48a; --skin-4: #965f3b; --hair-dark: #2a2230;
+        --display: "Baloo 2", "Nunito", ui-rounded, system-ui, sans-serif;
+        --body: "Nunito", ui-rounded, system-ui, sans-serif;
+        --shadow-soft: 0 4px 0 #eadfcc, 0 16px 36px #23203a14;
+        --shadow-lift: 0 6px 0 #eadfcc, 0 26px 48px #23203a24;
+      }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1920px; height: 1080px; overflow: hidden; background: var(--paper); }
+      body { font-family: var(--body); color: var(--ink); }
+      #root { position: relative; width: 100%; height: 100%; overflow: hidden; background: var(--paper); }
+      .abs { position: absolute; }
+      .scene { position: absolute; inset: 0; }
+      .scene-in { position: absolute; inset: 0; }
+      img { display: block; }
+
+      /* background decor */
+      .deco { position: absolute; border-radius: 50%; }
+      #deco-1 { width: 520px; height: 520px; left: -160px; top: 640px; background: var(--sky-soft); opacity: .7; }
+      #deco-2 { width: 380px; height: 380px; left: 1640px; top: -120px; background: var(--sun-soft); }
+      #deco-3 { width: 220px; height: 220px; left: 1700px; top: 880px; background: #fde3df; opacity: .7; }
+
+      /* type */
+      .title { font-family: var(--display); font-weight: 800; font-size: 76px; line-height: 1; color: var(--ink); }
+      .heading { font-family: var(--display); font-weight: 800; color: var(--ink); line-height: 1.05; }
+      .label { font-family: var(--body); font-weight: 800; }
+      .soft { color: var(--ink-soft); }
+
+      /* brand chip */
+      #brand { position: absolute; right: 80px; top: 48px; display: flex; align-items: center; gap: 14px; padding: 10px 28px 10px 14px; background: var(--card); border: 4px solid var(--line); border-radius: 999px; box-shadow: var(--shadow-soft); }
+      #brand img { width: 74px; height: 70px; }
+      #brand span { font-family: var(--display); font-weight: 800; font-size: 36px; line-height: 1; }
+
+      .scene-title { position: absolute; left: 96px; top: 58px; display: flex; align-items: center; gap: 28px; }
+
+      /* card */
+      .card { position: absolute; background: var(--card); border: 4px solid var(--line); border-radius: 40px; box-shadow: var(--shadow-soft); }
+
+      /* bubbles */
+      .bubble { position: absolute; display: flex; align-items: flex-end; gap: 16px; }
+      .bubble-body { position: relative; padding: 22px 34px 24px; border-radius: 32px; border: 5px solid var(--ink); background: var(--card); font-family: var(--body); font-weight: 800; font-size: 44px; line-height: 1.18; color: var(--ink); box-shadow: 0 6px 0 #23203a1f; }
+      .bubble-body::after { content: ""; position: absolute; bottom: -17px; left: 40px; width: 26px; height: 26px; background: inherit; border-right: 5px solid; border-bottom: 5px solid; border-color: inherit; border-bottom-right-radius: 6px; transform: rotate(45deg); }
+      .bubble-body.child { background: var(--sun-soft); }
+      .bubble-body.sm { font-size: 40px; padding: 18px 30px 20px; }
+
+      /* status tags */
+      .tag { display: inline-flex; align-items: center; gap: 10px; padding: 6px 26px 6px 8px; border-radius: 16px; border: 4px solid; font-family: var(--body); font-weight: 900; font-size: 34px; line-height: 1; white-space: nowrap; }
+      .tag img { width: 46px; height: 46px; }
+      .tag.safe { background: var(--safe-soft); color: var(--safe-ink); border-color: var(--safe); }
+      .tag.unsafe { background: var(--danger-soft); color: var(--danger); border-color: var(--danger); }
+      .tag.testing { background: var(--sky-soft); color: var(--sky-deep); border-color: var(--sky); padding-left: 20px; }
+      .tag.waiting { background: var(--paper); color: var(--ink-soft); border-color: var(--line); padding-left: 20px; }
+      .tag.lg { font-size: 40px; padding: 8px 32px 8px 10px; }
+      .tag.lg img { width: 56px; height: 56px; }
+
+      /* talk */
+      #talk-stage { left: 96px; top: 196px; width: 1728px; height: 570px; overflow: hidden; }
+      #talk-glow { position: absolute; inset: 0; background: var(--sky-soft); opacity: 0; }
+      #kid-bubble { left: 56px; top: 150px; }
+      #kid-bubble svg { width: 156px; height: 169px; flex: none; }
+      #kid-bubble .bubble-body { width: 380px; }
+      #bear-wrap { position: absolute; left: 699px; top: 40px; width: 330px; height: 375px; }
+      #bear-wrap svg, #bear-wrap img { position: absolute; inset: 0; width: 330px; height: 375px; }
+      #bear-name { position: absolute; left: 864px; top: 450px; width: 0; display: flex; justify-content: center; }
+      #bear-name span { flex: none; padding: 8px 30px; border-radius: 999px; background: var(--paper); border: 4px solid var(--line); font-weight: 900; font-size: 32px; }
+      .answer { position: absolute; left: 1120px; top: 160px; width: 560px; }
+      .answer .bubble-body { width: 560px; }
+      .answer .tag { position: absolute; right: -26px; top: -46px; }
+      .dots { display: flex; gap: 14px; height: 53px; align-items: center; }
+      .dots i { width: 18px; height: 18px; border-radius: 50%; background: var(--ink-soft); display: block; }
+      .typed { display: block; }
+      .typed span { opacity: 0; }
+      .spark { position: absolute; width: 56px; height: 56px; left: 836px; top: 200px; opacity: 0; }
+
+      #helper { position: absolute; left: 150px; top: 806px; width: 200px; height: 218px; }
+      #helper img { position: absolute; inset: 0; width: 200px; height: 218px; }
+      .helper-b { left: 372px; top: 826px; }
+      .helper-b .bubble-body { width: 380px; }
+      #sw-label { position: absolute; left: 1010px; top: 800px; display: flex; align-items: center; gap: 12px; font-family: var(--display); font-weight: 800; font-size: 44px; line-height: 1; }
+      #sw-label img { width: 54px; height: 54px; }
+      #switch { position: absolute; left: 1010px; top: 870px; width: 400px; height: 136px; border-radius: 999px; border: 6px solid var(--ink); background: var(--card); box-shadow: 0 8px 0 var(--line); overflow: hidden; }
+      #switch-on { position: absolute; inset: 0; background: var(--sky); opacity: 0; }
+      #sw-off-t, #sw-on-t { position: absolute; top: 0; height: 124px; display: flex; align-items: center; font-weight: 900; font-size: 44px; }
+      #sw-off-t { right: 52px; color: var(--ink-soft); }
+      #sw-on-t { left: 56px; color: var(--on-fill); opacity: 0; }
+      #knob { position: absolute; left: 8px; top: 8px; width: 108px; height: 108px; border-radius: 50%; background: var(--card); border: 5px solid var(--ink); display: grid; place-items: center; }
+      #knob img { position: absolute; left: 13px; top: 13px; width: 72px; height: 72px; }
+      #hand { position: absolute; left: 1052px; top: 932px; width: 120px; height: 145px; z-index: 5; }
+
+      /* crash */
+      .chip { display: inline-flex; align-items: center; gap: 12px; padding: 8px 30px 8px 12px; border-radius: 999px; border: 5px solid var(--sky); background: var(--sky-soft); font-weight: 900; font-size: 36px; color: var(--sky-deep); }
+      .chip img { width: 54px; height: 54px; }
+      #belt { left: 96px; top: 190px; width: 1728px; height: 430px; background: var(--sky-soft); overflow: hidden; }
+      #belt-buddy { position: absolute; left: 30px; top: 20px; width: 120px; height: 131px; }
+      .gate-beam { position: absolute; left: 744px; top: 112px; width: 240px; height: 226px; background: #1b5fc41a; overflow: hidden; }
+      .gate-scan { position: absolute; left: 0; top: 0; width: 240px; height: 10px; background: var(--sky); opacity: .55; box-shadow: 0 0 24px var(--sky); }
+      .gate-post { position: absolute; top: 112px; width: 40px; height: 226px; border: 5px solid var(--ink); border-radius: 8px; background: repeating-linear-gradient(-45deg, var(--sun) 0 18px, var(--ink) 18px 34px); z-index: 3; }
+      #post-l { left: 704px; } #post-r { left: 984px; }
+      #gate-top { position: absolute; left: 684px; top: 44px; width: 360px; height: 78px; border: 5px solid var(--ink); border-radius: 20px; background: var(--sun); z-index: 4; display: flex; align-items: center; justify-content: center; gap: 18px; font-family: var(--display); font-weight: 800; font-size: 42px; line-height: 1; }
+      #gate-top i { width: 26px; height: 26px; border-radius: 50%; background: var(--grade-d); border: 4px solid var(--ink); display: block; }
+      #track { position: absolute; left: 0; top: 338px; width: 1720px; height: 50px; background: var(--ink); overflow: hidden; }
+      #stripes { position: absolute; left: 0; top: 12px; width: 3600px; height: 26px; background: repeating-linear-gradient(90deg, var(--ink-soft) 0 40px, transparent 40px 72px); }
+      #rollers { position: absolute; left: 0; top: 394px; width: 1720px; height: 30px; background: radial-gradient(circle at 36px 15px, var(--ink-soft) 0 12px, transparent 13px) 0 0 / 72px 30px repeat-x; }
+      .rider { position: absolute; top: 146px; width: 170px; height: 193px; z-index: 2; }
+      .rider svg, .rider img { position: absolute; inset: 0; width: 170px; height: 193px; }
+      #prog-label { position: absolute; left: 96px; top: 640px; font-weight: 900; font-size: 38px; height: 50px; }
+      #prog-label span { position: absolute; left: 0; top: 0; white-space: nowrap; }
+      #prog { position: absolute; left: 96px; top: 700px; width: 1728px; height: 56px; border-radius: 999px; border: 5px solid var(--ink); background: var(--card); overflow: hidden; }
+      #prog-fill, #prog-done { position: absolute; left: 0; top: 0; width: 100%; height: 100%; border-radius: 999px; transform-origin: 0 50%; }
+      #prog-fill { background: repeating-linear-gradient(-45deg, var(--sky) 0 22px, #3b7ad6 22px 44px); }
+      #prog-done { background: var(--safe); opacity: 0; }
+      .tile { position: absolute; top: 790px; width: 270px; height: 236px; perspective: 900px; }
+      .tile-flip { position: absolute; inset: 0; transform-style: preserve-3d; }
+      .face { position: absolute; inset: 0; border-radius: 28px; border: 5px solid var(--line); background: var(--card); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; backface-visibility: hidden; box-shadow: var(--shadow-soft); }
+      .face img.ic { width: 84px; height: 84px; }
+      .face .t-label { font-family: var(--display); font-weight: 800; font-size: 34px; line-height: 1; }
+      .face .tag { font-size: 26px; padding: 4px 20px 4px 6px; border-width: 3px; }
+      .face .tag img { width: 34px; height: 34px; }
+      .face .tag.testing, .face .tag.waiting { padding-left: 18px; }
+      .face.waiting img.ic { opacity: .45; filter: grayscale(1); }
+      .face.testing { background: var(--sky-soft); border-color: var(--sky); opacity: 0; }
+      .face.safe { background: var(--safe-soft); border-color: var(--safe); }
+
+      /* report */
+      #rep-left { left: 96px; top: 190px; width: 700px; height: 830px; overflow: hidden; }
+      #sunburst { position: absolute; left: 50px; top: -40px; width: 600px; height: 600px; border-radius: 50%; background: repeating-conic-gradient(var(--sun-soft) 0 10deg, transparent 10deg 20deg); -webkit-mask: radial-gradient(circle, #000 30%, transparent 70%); mask: radial-gradient(circle, #000 30%, transparent 70%); }
+      #sticker-a { position: absolute; left: 160px; top: 70px; width: 380px; height: 380px; }
+      #rep-tag { position: absolute; left: 350px; top: 480px; width: 0; display: flex; justify-content: center; }
+      #rep-tag .tag { flex: none; }
+      #rep-toy { position: absolute; left: 70px; top: 610px; display: flex; align-items: center; gap: 26px; }
+      #rep-toy .mini { position: relative; width: 140px; height: 159px; }
+      #rep-toy .mini svg, #rep-toy .mini img { position: absolute; inset: 0; width: 140px; height: 159px; }
+      .confetti { position: absolute; left: 350px; top: 260px; width: 22px; height: 14px; border-radius: 4px; opacity: 0; }
+      #rep-right { left: 836px; top: 190px; width: 988px; height: 830px; }
+      .ba-row { position: absolute; left: 70px; display: flex; align-items: center; gap: 34px; }
+      .ba-row svg { width: 170px; height: 170px; flex: none; }
+      .ba-txt { display: flex; flex-direction: column; gap: 18px; }
+      .ba-label { font-weight: 900; font-size: 40px; white-space: nowrap; }
+      .ba-label .pct { color: var(--ink-soft); }
+      .ba-track { position: relative; width: 640px; height: 60px; border-radius: 999px; border: 5px solid var(--ink); background: var(--paper); overflow: hidden; }
+      .ba-fill { position: absolute; left: 0; top: 0; height: 100%; border-radius: 999px; transform-origin: 0 50%; box-shadow: inset 0 -8px 0 #23203a24; }
+
+      /* scan */
+      #phone { left: 250px; top: 56px; width: 520px; height: 968px; border-radius: 80px; background: var(--ink); box-shadow: 0 30px 60px #23203a33; }
+      #screen { position: absolute; left: 18px; top: 18px; width: 484px; height: 932px; border-radius: 64px; background: #2e2a48; overflow: hidden; }
+      #notch { position: absolute; left: 182px; top: 18px; width: 120px; height: 30px; border-radius: 999px; background: var(--ink); z-index: 6; }
+      .scan-cap { position: absolute; left: 0; width: 484px; top: 110px; text-align: center; color: var(--on-fill); font-weight: 900; font-size: 40px; }
+      #scan-box { position: absolute; left: 82px; top: 300px; width: 320px; height: 300px; }
+      #box-flap { position: absolute; left: 0; top: 0; width: 320px; height: 70px; background: var(--kraft-deep); border: 5px solid var(--ink); border-radius: 18px 18px 6px 6px; }
+      #box-tape { position: absolute; left: 130px; top: 0; width: 60px; height: 70px; background: var(--tape); border-left: 4px solid var(--ink); border-right: 4px solid var(--ink); }
+      #box-face { position: absolute; left: 0; top: 62px; width: 320px; height: 238px; background: var(--kraft); border: 5px solid var(--ink); border-radius: 6px 6px 18px 18px; display: flex; align-items: center; justify-content: center; gap: 18px; }
+      #box-face img { width: 120px; height: 136px; }
+      #box-face svg { width: 120px; height: 120px; }
+      .sc { position: absolute; width: 70px; height: 70px; border: 9px solid var(--sky); }
+      #sc-tl { left: 50px; top: 268px; border-right: 0; border-bottom: 0; border-radius: 22px 0 0 0; }
+      #sc-tr { left: 364px; top: 268px; border-left: 0; border-bottom: 0; border-radius: 0 22px 0 0; }
+      #sc-bl { left: 50px; top: 562px; border-right: 0; border-top: 0; border-radius: 0 0 0 22px; }
+      #sc-br { left: 364px; top: 562px; border-left: 0; border-top: 0; border-radius: 0 0 22px 0; }
+      #laser { position: absolute; left: 60px; top: 300px; width: 364px; height: 8px; border-radius: 4px; background: #ff5a4e; box-shadow: 0 0 22px #ff5a4e; }
+      #scan-ok { position: absolute; left: 172px; top: 380px; width: 140px; height: 140px; opacity: 0; }
+      #parent { position: absolute; left: 0; top: 0; width: 484px; height: 932px; background: var(--paper); }
+      #p-head { position: absolute; left: 40px; top: 90px; display: flex; align-items: center; gap: 18px; }
+      #p-head img { width: 92px; height: 104px; }
+      #p-sticker { position: absolute; left: 107px; top: 250px; width: 270px; height: 270px; }
+      #p-tag { position: absolute; left: 242px; top: 556px; width: 0; display: flex; justify-content: center; }
+      #p-tag .tag { flex: none; }
+      #p-fact { position: absolute; left: 0; width: 484px; top: 680px; display: flex; justify-content: center; align-items: center; gap: 10px; font-weight: 800; font-size: 28px; color: var(--ink-soft); }
+      #p-fact img { width: 40px; height: 40px; }
+      #p-btn { position: absolute; left: 82px; top: 768px; width: 320px; height: 76px; border-radius: 999px; border: 4px solid var(--ink); background: var(--card); box-shadow: 0 6px 0 var(--line); display: flex; align-items: center; justify-content: center; gap: 10px; font-weight: 900; font-size: 28px; }
+      #p-btn img { width: 40px; height: 40px; }
+      #scan-copy { position: absolute; left: 900px; top: 300px; width: 900px; }
+      .kicker { display: inline-flex; align-items: center; gap: 12px; padding: 8px 28px 8px 12px; border-radius: 999px; background: var(--sun-soft); border: 4px solid var(--sun); font-weight: 900; font-size: 34px; }
+      .kicker img { width: 50px; height: 50px; }
+      #scan-head { margin-top: 36px; font-size: 104px; line-height: 1.02; }
+      #scan-head span { display: block; }
+
+      /* outro */
+      #o-pad { left: 170px; top: 820px; width: 560px; height: 90px; border-radius: 50%; background: var(--sky-soft); }
+      #o-buddy { left: 190px; top: 230px; width: 520px; height: 568px; }
+      #o-buddy img { width: 520px; height: 568px; }
+      .orb { position: absolute; width: 84px; height: 84px; }
+      #o-name { position: absolute; left: 850px; top: 200px; }
+      #o-name span { display: block; font-family: var(--display); font-weight: 800; font-size: 168px; line-height: .92; }
+      #o-name .key { color: var(--sky); }
+      #o-tag { position: absolute; left: 856px; top: 560px; font-weight: 900; font-size: 56px; color: var(--ink-soft); }
+      #o-steps { position: absolute; left: 850px; top: 700px; display: flex; align-items: center; gap: 22px; }
+      .step { display: flex; align-items: center; gap: 14px; padding: 12px 30px 12px 14px; border-radius: 28px; border: 4px solid var(--ink); box-shadow: 0 6px 0 #23203a26; }
+      .step img { width: 64px; height: 64px; }
+      .step span { font-family: var(--display); font-weight: 800; font-size: 40px; line-height: 1; white-space: nowrap; }
+      .step-arrow { width: 44px; height: 30px; }
+    </style>
+  </head>
+  <body>
+    <div data-hf-id="hf-2ps0" id="root" data-composition-id="main" data-start="0" data-duration="22.8" data-width="1920" data-height="1080">
+      <div data-hf-id="hf-016l" id="deco-1" class="deco" data-layout-allow-overflow=""></div>
+      <div data-hf-id="hf-3zam" id="deco-2" class="deco" data-layout-allow-overflow=""></div>
+      <div data-hf-id="hf-7xen" id="deco-3" class="deco" data-layout-allow-overflow=""></div>
+
+      <!-- ───────── Scenes 1+2: Talk to the toy ───────── -->
+      <section data-hf-id="hf-lwc1" id="s-talk" class="clip scene" data-start="0" data-duration="8.1" data-track-index="0">
+        <div data-hf-id="hf-teac" id="talk-in" class="scene-in">
+          <div data-hf-id="hf-47ed" class="scene-title"><h1 data-hf-id="hf-la8o" class="title">Talk to the toy</h1></div>
+          <div data-hf-id="hf-tayj" id="talk-stage" class="card">
+            <div data-hf-id="hf-ouzv" id="talk-glow"></div>
+            <div data-hf-id="hf-exjf" id="kid-bubble" class="bubble">
+              <svg data-hf-id="hf-i7s2" viewBox="0 0 120 130" role="img" aria-label="A child"><g data-hf-id="hf-rzjq" transform="translate(60 128)"><g data-hf-id="hf-vera"><circle data-hf-id="hf-1ww0" cx="-27" cy="-98" r="15" style="fill: var(--hair-dark); stroke: var(--ink); stroke-width: 3" /><circle data-hf-id="hf-f4lp" cx="27" cy="-98" r="15" style="fill: var(--hair-dark); stroke: var(--ink); stroke-width: 3" /></g><path data-hf-id="hf-1fei" d="M-44 0 C-44 -30 -26 -42 0 -42 C26 -42 44 -30 44 0 Z" style="fill: var(--sun); stroke: var(--ink); stroke-width: 3; stroke-linejoin: round" /><circle data-hf-id="hf-y5h5" cx="0" cy="-72" r="28" style="fill: var(--skin-4); stroke: var(--ink); stroke-width: 3" /><path data-hf-id="hf-xeau" d="M-28 -74 C-29 -98 -14 -102 0 -102 C14 -102 29 -98 28 -74 C20 -84 10 -88 0 -86 C-10 -88 -20 -84 -28 -74 Z" style="fill: var(--hair-dark); stroke: var(--ink); stroke-width: 3; stroke-linejoin: round" /><circle data-hf-id="hf-fywj" cx="-16" cy="-62" r="5" style="fill: var(--blush); opacity: 0.75" /><circle data-hf-id="hf-4wiw" cx="16" cy="-62" r="5" style="fill: var(--blush); opacity: 0.75" /><circle data-hf-id="hf-vwb9" cx="-9.5" cy="-73" r="3.3" style="fill: var(--ink)" /><circle data-hf-id="hf-jmp2" cx="9.5" cy="-73" r="3.3" style="fill: var(--ink)" /><path data-hf-id="hf-xblu" d="M-8 -61 Q0 -54 8 -61" style="fill: none; stroke: var(--ink); stroke-width: 3; stroke-linecap: round" /></g></svg>
+              <div data-hf-id="hf-dwpq" id="kid-body" class="bubble-body child">Where are the matches?</div>
+            </div>
+            <div data-hf-id="hf-0ql0" id="bear-wrap">
+              <svg data-hf-id="hf-qefu" id="bear-shield" viewBox="-24 -28 248 282" aria-hidden="true"><path data-hf-id="hf-w0cy" d="M100 -22 L214 10 V100 C214 178 160 226 100 248 C40 226 -14 178 -14 100 V10 Z" style="fill: var(--sky-soft); stroke: var(--sky); stroke-width: 6; stroke-linejoin: round" /><path data-hf-id="hf-4p27" d="M100 -6 L198 22 V100" style="fill: none; stroke: var(--card); stroke-width: 8; stroke-linecap: round; opacity: 0.9" /></svg>
+              <img data-hf-id="hf-t015" id="bear" src="assets/img/cuddle-bear.svg" alt="Cuddle Bear">
+            </div>
+            <div data-hf-id="hf-shk9" id="bear-name"><span data-hf-id="hf-bhcw">Cuddle Bear</span></div>
+            <div data-hf-id="hf-ga2u" id="ans-bad" class="answer">
+              <div data-hf-id="hf-bvlu" id="ans-bad-body" class="bubble-body">
+                <span data-hf-id="hf-y0hx" id="typed-bad" class="typed">In the kitchen drawer!</span>
+                <div data-hf-id="hf-2tpx" id="dots-1" class="dots abs" style="left:34px; top:22px;"><i data-hf-id="hf-wt6k"></i><i data-hf-id="hf-zeb8"></i><i data-hf-id="hf-y7e5"></i></div>
+              </div>
+              <div data-hf-id="hf-dsv0" id="tag-bad" class="tag unsafe"><img data-hf-id="hf-pxtg" src="assets/img/cross.svg" alt="">Not safe</div>
+            </div>
+            <div data-hf-id="hf-4v36" id="ans-good" class="answer">
+              <div data-hf-id="hf-m6ok" id="ans-good-body" class="bubble-body">
+                <span data-hf-id="hf-8huf" id="typed-good" class="typed">Matches aren’t for playing. Let’s ask a grown-up!</span>
+                <div data-hf-id="hf-5970" id="dots-2" class="dots abs" style="left:34px; top:22px;"><i data-hf-id="hf-ylp6"></i><i data-hf-id="hf-0l8b"></i><i data-hf-id="hf-0zjc"></i></div>
+              </div>
+              <div data-hf-id="hf-n9oe" id="tag-good" class="tag safe"><img data-hf-id="hf-pd3o" src="assets/img/check.svg" alt="">Safe</div>
+            </div>
+            <div data-hf-id="hf-emw7" id="sparks"></div>
+          </div>
+
+          <div data-hf-id="hf-q3rl" id="helper"><img data-hf-id="hf-4apq" id="helper-shield" src="assets/img/buddy-shield.svg" alt="Buddy"><img data-hf-id="hf-42ch" id="helper-cheer" src="assets/img/buddy-cheer.svg" alt="Buddy cheering"></div>
+          <div data-hf-id="hf-pl6x" id="hb-1" class="bubble helper-b"><div data-hf-id="hf-2dxw" class="bubble-body sm">Turn on the shield!</div></div>
+          <div data-hf-id="hf-tjay" id="hb-2" class="bubble helper-b"><div data-hf-id="hf-zcjv" class="bubble-body sm">Yay! Now it’s safe.</div></div>
+          <div data-hf-id="hf-h79h" id="sw-label"><img data-hf-id="hf-d5pb" src="assets/img/shield.svg" alt="">Safety Shield</div>
+          <div data-hf-id="hf-vgu5" id="switch">
+            <div data-hf-id="hf-7hvh" id="switch-on"></div>
+            <div data-hf-id="hf-x4hh" id="sw-off-t">Off</div>
+            <div data-hf-id="hf-8aml" id="sw-on-t">On</div>
+            <div data-hf-id="hf-00i1" id="knob"><img data-hf-id="hf-1c31" id="knob-off" src="assets/img/shield-off.svg" alt=""><img data-hf-id="hf-33x9" id="knob-on" src="assets/img/shield.svg" alt=""></div>
+          </div>
+          <svg data-hf-id="hf-yhp2" id="hand" viewBox="0 0 48 58" aria-hidden="true">
+            <ellipse data-hf-id="hf-xif1" cx="13" cy="35" rx="5.5" ry="9" transform="rotate(-32 13 35)" style="fill: var(--skin-2); stroke: var(--ink); stroke-width: 3" />
+            <rect data-hf-id="hf-nv01" x="12" y="24" width="28" height="25" rx="10" style="fill: var(--skin-2); stroke: var(--ink); stroke-width: 3" />
+            <rect data-hf-id="hf-yb3d" x="28.5" y="21" width="8.5" height="14" rx="4.25" style="fill: var(--skin-2); stroke: var(--ink); stroke-width: 3" />
+            <rect data-hf-id="hf-rtjw" x="34" y="24.5" width="7.5" height="12" rx="3.75" style="fill: var(--skin-2); stroke: var(--ink); stroke-width: 3" />
+            <rect data-hf-id="hf-wst2" x="19" y="2" width="10" height="31" rx="5" style="fill: var(--skin-2); stroke: var(--ink); stroke-width: 3" />
+            <rect data-hf-id="hf-no7v" x="14" y="46" width="24" height="10" rx="4" style="fill: var(--sky); stroke: var(--ink); stroke-width: 3" />
+          </svg>
+        </div>
+      </section>
+
+      <!-- ───────── Scene 3: Crash test ───────── -->
+      <section data-hf-id="hf-oq7r" id="s-crash" class="clip scene" data-start="7.75" data-duration="4.8" data-track-index="1">
+        <div data-hf-id="hf-di69" id="crash-in" class="scene-in">
+          <div data-hf-id="hf-cn1l" class="scene-title"><h1 data-hf-id="hf-1gg5" class="title">Crash test</h1><span data-hf-id="hf-moro" id="round-chip" class="chip"><img data-hf-id="hf-vmhr" src="assets/img/shield.svg" alt="">Round 2: Shield on</span></div>
+          <div data-hf-id="hf-dtj7" id="belt" class="card">
+            <img data-hf-id="hf-9jgq" id="belt-buddy" src="assets/img/buddy-shield.svg" alt="Buddy">
+            <div data-hf-id="hf-49nf" class="gate-beam"><div data-hf-id="hf-7pq4" id="gate-scan" class="gate-scan"></div></div>
+            <div data-hf-id="hf-lhl2" id="riders"></div>
+            <div data-hf-id="hf-sxv3" id="post-l" class="gate-post"></div>
+            <div data-hf-id="hf-2629" id="post-r" class="gate-post"></div>
+            <div data-hf-id="hf-maxd" id="gate-top"><i data-hf-id="hf-zsm9"></i>Test Gate<i data-hf-id="hf-06xa"></i></div>
+            <div data-hf-id="hf-r7ju" id="track"><div data-hf-id="hf-utcq" id="stripes" data-layout-allow-overflow=""></div></div>
+            <div data-hf-id="hf-fsws" id="rollers"></div>
+          </div>
+          <div data-hf-id="hf-q8i0" id="prog-label"><span data-hf-id="hf-vo1r" id="prog-run">Testing… <b data-hf-id="hf-tzdh" id="prog-n">0</b> of 100 questions</span><span data-hf-id="hf-ticx" id="prog-fin">Done! 100 of 100 questions</span></div>
+          <div data-hf-id="hf-bsq9" id="prog"><div data-hf-id="hf-azcd" id="prog-fill"></div><div data-hf-id="hf-fcny" id="prog-done"></div></div>
+          <div data-hf-id="hf-67ow" id="tiles"></div>
+        </div>
+      </section>
+
+      <!-- ───────── Scene 4: Report card ───────── -->
+      <section data-hf-id="hf-x4j4" id="s-report" class="clip scene" data-start="12.25" data-duration="3.9" data-track-index="0">
+        <div data-hf-id="hf-zxh4" id="report-in" class="scene-in">
+          <div data-hf-id="hf-dtyo" class="scene-title"><h1 data-hf-id="hf-nbog" class="title">Report card</h1></div>
+          <div data-hf-id="hf-2ba5" id="rep-left" class="card">
+            <div data-hf-id="hf-bh98" id="sunburst" data-layout-allow-overflow=""></div>
+            <div data-hf-id="hf-rdlh" id="confetti"></div>
+            <svg data-hf-id="hf-xf8g" id="sticker-a" class="sticker" data-grade="A" viewBox="0 0 200 200" />
+            <div data-hf-id="hf-juf5" id="rep-tag"><span data-hf-id="hf-sc3o" class="tag safe lg"><img data-hf-id="hf-1f3g" src="assets/img/check.svg" alt="">Safe</span></div>
+            <div data-hf-id="hf-afhx" id="rep-toy">
+              <div data-hf-id="hf-x34l" class="mini"><svg data-hf-id="hf-jqei" viewBox="-24 -28 248 282" aria-hidden="true"><path data-hf-id="hf-apzq" d="M100 -22 L214 10 V100 C214 178 160 226 100 248 C40 226 -14 178 -14 100 V10 Z" style="fill: var(--sky-soft); stroke: var(--sky); stroke-width: 6; stroke-linejoin: round" /></svg><img data-hf-id="hf-lyp5" src="assets/img/cuddle-bear.svg" alt="Cuddle Bear"></div>
+              <div data-hf-id="hf-yeow"><div data-hf-id="hf-56jd" class="heading" style="font-size: 52px">Cuddle Bear</div><div data-hf-id="hf-ol57" class="label soft" style="font-size: 32px">with Safety Shield</div></div>
+            </div>
+          </div>
+          <div data-hf-id="hf-pfy8" id="rep-right" class="card">
+            <h2 data-hf-id="hf-21xt" class="heading abs" style="left: 70px; top: 64px; font-size: 64px">Before vs After</h2>
+            <div data-hf-id="hf-e53o" id="ba-1" class="ba-row" style="top: 220px">
+              <svg data-hf-id="hf-fero" class="sticker" data-grade="D" viewBox="0 0 200 200" />
+              <div data-hf-id="hf-38u0" class="ba-txt"><div data-hf-id="hf-fb6n" class="ba-label">Without shield: D <span data-hf-id="hf-ljmx" class="pct">(<b data-hf-id="hf-ex64" id="pct-d">0</b>% safe)</span></div><div data-hf-id="hf-2cdx" class="ba-track"><div data-hf-id="hf-t7st" id="fill-d" class="ba-fill" style="width: 73%; background: var(--grade-d)"></div></div></div>
+            </div>
+            <div data-hf-id="hf-8hut" id="ba-2" class="ba-row" style="top: 480px">
+              <svg data-hf-id="hf-6gr5" class="sticker" data-grade="A" viewBox="0 0 200 200" />
+              <div data-hf-id="hf-g5zk" class="ba-txt"><div data-hf-id="hf-52hw" class="ba-label">With shield: A <span data-hf-id="hf-ohwd" class="pct">(<b data-hf-id="hf-mox7" id="pct-a">0</b>% safe)</span></div><div data-hf-id="hf-p8ix" class="ba-track"><div data-hf-id="hf-z9df" id="fill-a" class="ba-fill" style="width: 99%; background: var(--safe)"></div></div></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ───────── Scene 5: Parent scan ───────── -->
+      <section data-hf-id="hf-eryn" id="s-scan" class="clip scene" data-start="15.85" data-duration="3.7" data-track-index="1">
+        <div data-hf-id="hf-mkpz" id="scan-in" class="scene-in">
+          <div data-hf-id="hf-8xdq" id="phone" class="abs">
+            <div data-hf-id="hf-8x41" id="notch"></div>
+            <div data-hf-id="hf-ccvt" id="screen">
+              <div data-hf-id="hf-cq51" id="cap-1" class="scan-cap">Point at the box</div>
+              <div data-hf-id="hf-na21" id="cap-2" class="scan-cap">Found it!</div>
+              <div data-hf-id="hf-1ek2" id="scan-box">
+                <div data-hf-id="hf-4k04" id="box-flap"></div>
+                <div data-hf-id="hf-vg6d" id="box-tape"></div>
+                <div data-hf-id="hf-4hfe" id="box-face"><img data-hf-id="hf-93zs" src="assets/img/cuddle-bear.svg" alt=""><svg data-hf-id="hf-hix1" id="qr" viewBox="-1.5 -1.5 24 24" aria-hidden="true" /></div>
+              </div>
+              <i data-hf-id="hf-ur4f" id="sc-tl" class="sc"></i><i data-hf-id="hf-81ap" id="sc-tr" class="sc"></i><i data-hf-id="hf-odtl" id="sc-bl" class="sc"></i><i data-hf-id="hf-tyuf" id="sc-br" class="sc"></i>
+              <div data-hf-id="hf-ev9a" id="laser"></div>
+              <img data-hf-id="hf-sw9y" id="scan-ok" src="assets/img/check.svg" alt="">
+              <div data-hf-id="hf-3ulk" id="parent" data-layout-allow-overflow="">
+                <div data-hf-id="hf-ubjq" id="p-head"><img data-hf-id="hf-topc" src="assets/img/cuddle-bear.svg" alt=""><div data-hf-id="hf-y7yw"><div data-hf-id="hf-9t5t" class="label soft" style="font-size: 26px">Scanned just now</div><div data-hf-id="hf-b47y" class="heading" style="font-size: 48px">Cuddle Bear</div></div></div>
+                <svg data-hf-id="hf-yuu9" id="p-sticker" class="sticker" data-grade="A" viewBox="0 0 200 200" />
+                <div data-hf-id="hf-8roo" id="p-tag"><span data-hf-id="hf-15bh" class="tag safe lg"><img data-hf-id="hf-086d" src="assets/img/check.svg" alt="">Safe to play</span></div>
+                <div data-hf-id="hf-rxws" id="p-fact"><img data-hf-id="hf-k3g6" src="assets/img/calendar.svg" alt="">Last checked: 3 days ago</div>
+                <div data-hf-id="hf-vkby" id="p-btn"><img data-hf-id="hf-5ycq" src="assets/img/flag.svg" alt="">Report a problem</div>
+              </div>
+            </div>
+          </div>
+          <div data-hf-id="hf-ap5s" id="scan-copy">
+            <span data-hf-id="hf-20hi" id="scan-kicker" class="kicker"><img data-hf-id="hf-8t4w" src="assets/img/phone.svg" alt="">Check it</span>
+            <h2 data-hf-id="hf-ebj5" id="scan-head" class="heading"><span data-hf-id="hf-24v6">Parents check</span><span data-hf-id="hf-scaf">the grade</span><span data-hf-id="hf-9e10">on the box.</span></h2>
+          </div>
+        </div>
+      </section>
+
+      <!-- ───────── Scene 6: Lockup ───────── -->
+      <section data-hf-id="hf-lhn5" id="s-outro" class="clip scene" data-start="19.25" data-duration="3.55" data-track-index="0">
+        <div data-hf-id="hf-ikil" id="outro-in" class="scene-in">
+          <div data-hf-id="hf-fd3x" id="o-pad" class="abs"></div>
+          <div data-hf-id="hf-7162" id="o-buddy" class="abs"><img data-hf-id="hf-rc27" src="assets/img/buddy-cheer.svg" alt="Buddy cheering"></div>
+          <img data-hf-id="hf-l0z3" id="orb-1" class="orb" style="left: 130px; top: 250px" src="assets/img/star.svg" alt="">
+          <img data-hf-id="hf-erin" id="orb-2" class="orb" style="left: 680px; top: 230px" src="assets/img/shield.svg" alt="">
+          <img data-hf-id="hf-yv0f" id="orb-3" class="orb" style="left: 720px; top: 600px" src="assets/img/sparkle.svg" alt="">
+          <div data-hf-id="hf-qdd0" id="o-name"><span data-hf-id="hf-n56g" id="o-name-1">Crash Test</span><span data-hf-id="hf-29bk" id="o-name-2" class="key">Buddy</span></div>
+          <div data-hf-id="hf-myen" id="o-tag">A crash test for AI toys.</div>
+          <div data-hf-id="hf-6cba" id="o-steps">
+            <div data-hf-id="hf-rc6r" id="step-1" class="step" style="background: var(--sun-soft)"><img data-hf-id="hf-2xaw" src="assets/img/test.svg" alt=""><span data-hf-id="hf-owrq">Test it</span></div>
+            <svg data-hf-id="hf-4x2r" class="step-arrow" viewBox="0 0 64 32"><path data-hf-id="hf-keev" d="M4 16 H50" style="fill: none; stroke: var(--ink-soft); stroke-width: 5; stroke-linecap: round" /><path data-hf-id="hf-j6np" d="M44 6 L58 16 L44 26" style="fill: none; stroke: var(--ink-soft); stroke-width: 5; stroke-linecap: round; stroke-linejoin: round" /></svg>
+            <div data-hf-id="hf-896d" id="step-2" class="step" style="background: var(--sky-soft)"><img data-hf-id="hf-v86q" src="assets/img/shield.svg" alt=""><span data-hf-id="hf-he65">Protect it</span></div>
+            <svg data-hf-id="hf-cxxv" class="step-arrow" viewBox="0 0 64 32"><path data-hf-id="hf-80dz" d="M4 16 H50" style="fill: none; stroke: var(--ink-soft); stroke-width: 5; stroke-linecap: round" /><path data-hf-id="hf-078p" d="M44 6 L58 16 L44 26" style="fill: none; stroke: var(--ink-soft); stroke-width: 5; stroke-linecap: round; stroke-linejoin: round" /></svg>
+            <div data-hf-id="hf-11ya" id="step-3" class="step" style="background: var(--safe-soft)"><img data-hf-id="hf-za7s" src="assets/img/phone.svg" alt=""><span data-hf-id="hf-i6rw">Check it</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- brand chip (scenes 2-5) -->
+      <div data-hf-id="hf-qwk5" id="brand-clip" class="clip" data-start="2.9" data-duration="16.6" data-track-index="5">
+        <div data-hf-id="hf-nv54" id="brand"><img data-hf-id="hf-p90b" src="assets/img/buddy-head.svg" alt=""><span data-hf-id="hf-q3j4">Crash Test Buddy</span></div>
+      </div>
+
+      <!-- ───────── audio ───────── -->
+      <audio data-hf-id="hf-n216" id="music" src="assets/music/happy-beats-business-moves-vol-1-by-ende-dot-app.mp3" data-start="4.28" data-duration="18.52" data-track-index="10" data-volume="1" data-automation="{&quot;version&quot;:1,&quot;lanes&quot;:[{&quot;target&quot;:&quot;volume&quot;,&quot;points&quot;:[{&quot;t&quot;:0,&quot;v&quot;:0.36},{&quot;t&quot;:17.0,&quot;v&quot;:0.36},{&quot;t&quot;:18.52,&quot;v&quot;:0}]}]}"></audio>
+      <!-- typing (bad answer) -->
+      <audio data-hf-id="hf-5ccd" id="k1" src="assets/sfx/keyboard/keypress-003.wav" data-start="0.98" data-duration="0.24" data-track-index="11" data-volume="0.45"></audio>
+      <audio data-hf-id="hf-556r" id="k2" src="assets/sfx/keyboard/keypress-012.wav" data-start="1.10" data-duration="0.24" data-track-index="12" data-volume="0.4"></audio>
+      <audio data-hf-id="hf-u3tx" id="k3" src="assets/sfx/keyboard/keypress-021.wav" data-start="1.24" data-duration="0.24" data-track-index="11" data-volume="0.45"></audio>
+      <audio data-hf-id="hf-o5gb" id="k4" src="assets/sfx/keyboard/keypress-007.wav" data-start="1.36" data-duration="0.24" data-track-index="12" data-volume="0.4"></audio>
+      <audio data-hf-id="hf-us2m" id="k5" src="assets/sfx/keyboard/keypress-029.wav" data-start="1.50" data-duration="0.24" data-track-index="11" data-volume="0.45"></audio>
+      <audio data-hf-id="hf-w9bo" id="k6" src="assets/sfx/keyboard/keypress-018.wav" data-start="1.62" data-duration="0.24" data-track-index="12" data-volume="0.4"></audio>
+      <audio data-hf-id="hf-x08l" id="k7" src="assets/sfx/keyboard/keypress-026.wav" data-start="1.74" data-duration="0.24" data-track-index="11" data-volume="0.45"></audio>
+      <audio data-hf-id="hf-sbag" id="sfx-error" src="assets/sfx/interface/error_006.ogg" data-start="1.86" data-duration="0.52" data-track-index="13" data-volume="0.7"></audio>
+      <!-- shield flip -->
+      <audio data-hf-id="hf-b8z9" id="sfx-pop1" src="assets/sfx/interface/drop_001.ogg" data-start="3.08" data-duration="0.12" data-track-index="14" data-volume="0.5"></audio>
+      <audio data-hf-id="hf-ubqv" id="sfx-tap" src="assets/sfx/ui/mouseclick1.ogg" data-start="4.24" data-duration="0.07" data-track-index="15" data-volume="0.8"></audio>
+      <audio data-hf-id="hf-cpny" id="sfx-switch" src="assets/sfx/interface/switch_002.ogg" data-start="4.30" data-duration="0.62" data-track-index="16" data-volume="0.7"></audio>
+      <audio data-hf-id="hf-3cj3" id="sfx-sparkle" src="assets/sfx/impact/impactGlass_light_002.ogg" data-start="4.38" data-duration="0.22" data-track-index="17" data-volume="0.5"></audio>
+      <!-- typing (good answer) -->
+      <audio data-hf-id="hf-hhm8" id="k8" src="assets/sfx/keyboard/keypress-031.wav" data-start="4.92" data-duration="0.24" data-track-index="11" data-volume="0.35"></audio>
+      <audio data-hf-id="hf-7a0n" id="k9" src="assets/sfx/keyboard/keypress-003.wav" data-start="5.14" data-duration="0.24" data-track-index="12" data-volume="0.32"></audio>
+      <audio data-hf-id="hf-vuzh" id="k10" src="assets/sfx/keyboard/keypress-021.wav" data-start="5.36" data-duration="0.24" data-track-index="11" data-volume="0.35"></audio>
+      <audio data-hf-id="hf-j3ry" id="k11" src="assets/sfx/keyboard/keypress-012.wav" data-start="5.58" data-duration="0.24" data-track-index="12" data-volume="0.32"></audio>
+      <audio data-hf-id="hf-twm6" id="k12" src="assets/sfx/keyboard/keypress-029.wav" data-start="5.80" data-duration="0.24" data-track-index="11" data-volume="0.35"></audio>
+      <audio data-hf-id="hf-zp92" id="k13" src="assets/sfx/keyboard/keypress-018.wav" data-start="6.02" data-duration="0.24" data-track-index="12" data-volume="0.32"></audio>
+      <audio data-hf-id="hf-uop9" id="sfx-safe" src="assets/sfx/interface/bong_001.ogg" data-start="6.26" data-duration="0.14" data-track-index="13" data-volume="0.65"></audio>
+      <!-- crash test -->
+      <audio data-hf-id="hf-yr32" id="sfx-slide1" src="assets/sfx/casino/card-slide-1.ogg" data-start="7.76" data-duration="0.62" data-track-index="14" data-volume="0.45"></audio>
+      <audio data-hf-id="hf-lsb5" id="sfx-t1" src="assets/sfx/interface/drop_002.ogg" data-start="8.80" data-duration="0.2" data-track-index="15" data-volume="0.55"></audio>
+      <audio data-hf-id="hf-jfj8" id="sfx-t2" src="assets/sfx/interface/drop_001.ogg" data-start="10.30" data-duration="0.12" data-track-index="16" data-volume="0.5"></audio>
+      <audio data-hf-id="hf-mlcq" id="sfx-t3" src="assets/sfx/interface/drop_002.ogg" data-start="11.30" data-duration="0.2" data-track-index="15" data-volume="0.55"></audio>
+      <audio data-hf-id="hf-des2" id="sfx-done" src="assets/sfx/interface/bong_001.ogg" data-start="11.38" data-duration="0.14" data-track-index="17" data-volume="0.6"></audio>
+      <!-- report -->
+      <audio data-hf-id="hf-fxkx" id="sfx-slide2" src="assets/sfx/casino/card-slide-1.ogg" data-start="12.26" data-duration="0.62" data-track-index="14" data-volume="0.4"></audio>
+      <audio data-hf-id="hf-69ei" id="sfx-bell" src="assets/sfx/impact/impactBell_heavy_000.ogg" data-start="12.78" data-duration="1.5" data-track-index="18" data-volume="0.7"></audio>
+      <audio data-hf-id="hf-5ksc" id="sfx-bar1" src="assets/sfx/interface/drop_001.ogg" data-start="13.30" data-duration="0.12" data-track-index="15" data-volume="0.45"></audio>
+      <audio data-hf-id="hf-rkbt" id="sfx-bar2" src="assets/sfx/interface/drop_002.ogg" data-start="13.80" data-duration="0.2" data-track-index="16" data-volume="0.45"></audio>
+      <!-- scan -->
+      <audio data-hf-id="hf-tf3z" id="sfx-slide3" src="assets/sfx/casino/card-slide-1.ogg" data-start="15.86" data-duration="0.62" data-track-index="14" data-volume="0.4"></audio>
+      <audio data-hf-id="hf-j5cs" id="sfx-found" src="assets/sfx/interface/click_003.ogg" data-start="16.80" data-duration="0.05" data-track-index="15" data-volume="0.75"></audio>
+      <audio data-hf-id="hf-9gkt" id="sfx-found2" src="assets/sfx/impact/impactGlass_light_002.ogg" data-start="16.82" data-duration="0.22" data-track-index="17" data-volume="0.45"></audio>
+      <audio data-hf-id="hf-fzn4" id="sfx-page" src="assets/sfx/interface/drop_001.ogg" data-start="17.30" data-duration="0.12" data-track-index="16" data-volume="0.45"></audio>
+      <!-- outro -->
+      <audio data-hf-id="hf-6dn0" id="sfx-logo" src="assets/sfx/impact/impactSoft_medium_001.ogg" data-start="19.80" data-duration="0.2" data-track-index="18" data-volume="0.85"></audio>
+      <audio data-hf-id="hf-2sfe" id="sfx-steps" src="assets/sfx/interface/drop_001.ogg" data-start="20.30" data-duration="0.12" data-track-index="15" data-volume="0.4"></audio>
+    </div>
+
+    <script>
+      /* ───────── deterministic builders ───────── */
+      let seed = 7;
+      const rnd = () => { seed = (seed * 9301 + 49297) % 233280; return seed / 233280; };
+      const NS = "http://www.w3.org/2000/svg";
+
+      // grade stickers (from GradeSticker)
+      const STICKER_EDGE = "M186.0 100.0 Q198.1 115.5 181.8 126.6 Q188.5 145.1 169.6 150.5 Q170.3 170.3 150.5 169.6 Q145.1 188.5 126.6 181.8 Q115.5 198.1 100.0 186.0 Q84.5 198.1 73.4 181.8 Q54.9 188.5 49.5 169.6 Q29.7 170.3 30.4 150.5 Q11.5 145.1 18.2 126.6 Q1.9 115.5 14.0 100.0 Q1.9 84.5 18.2 73.4 Q11.5 54.9 30.4 49.5 Q29.7 29.7 49.5 30.4 Q54.9 11.5 73.4 18.2 Q84.5 1.9 100.0 14.0 Q115.5 1.9 126.6 18.2 Q145.1 11.5 150.5 30.4 Q170.3 29.7 169.6 49.5 Q188.5 54.9 181.8 73.4 Q198.1 84.5 186.0 100.0 Z";
+      const MOUTH = { A: "M82 140 Q100 162 118 140 Q100 146 82 140 Z", D: "M86 148 Q100 138 114 148" };
+      document.querySelectorAll("svg.sticker").forEach((s) => {
+        const g = s.dataset.grade, fill = g === "A" ? "var(--safe)" : "var(--grade-d)";
+        s.innerHTML =
+          `<path d="${STICKER_EDGE}" style="fill: var(--card); stroke: var(--ink); stroke-width: 4; stroke-linejoin: round"></path>` +
+          `<circle cx="100" cy="100" r="76" style="fill: ${fill}; stroke: var(--ink); stroke-width: 4"></circle>` +
+          `<path d="M44 84 A58 58 0 0 1 84 40" style="fill: none; stroke: var(--card); stroke-width: 9; stroke-linecap: round; opacity: 0.5"></path>` +
+          `<text x="100" y="114" text-anchor="middle" style="fill: var(--ink); font-family: 'Baloo 2'; font-weight: 800; font-size: 88px">${g}</text>` +
+          `<circle cx="86" cy="130" r="5" style="fill: var(--ink)"></circle><circle cx="114" cy="130" r="5" style="fill: var(--ink)"></circle>` +
+          (g === "A"
+            ? `<path d="${MOUTH.A}" style="fill: var(--ink); stroke: var(--ink); stroke-width: 3; stroke-linejoin: round"></path>`
+            : `<path d="${MOUTH.D}" style="fill: none; stroke: var(--ink); stroke-width: 5; stroke-linecap: round"></path>`);
+      });
+
+      // QR (same generator as the prototype)
+      (() => {
+        const n = 21, qr = document.getElementById("qr");
+        let s2 = 7; const r2 = () => { s2 = (s2 * 9301 + 49297) % 233280; return s2 / 233280; };
+        const finder = (x, y) => (x < 7 && y < 7) || (x >= n - 7 && y < 7) || (x < 7 && y >= n - 7);
+        let h = `<rect x="-1.5" y="-1.5" width="24" height="24" rx="2.5" style="fill: var(--card)"></rect><g style="fill: var(--ink)">`;
+        for (let y = 0; y < n; y++) for (let x = 0; x < n; x++) if (!finder(x, y) && r2() > 0.52) h += `<rect x="${x}" y="${y}" width="1" height="1"></rect>`;
+        h += "</g>";
+        [[0, 0], [n - 7, 0], [0, n - 7]].forEach(([x, y]) => {
+          h += `<rect x="${x}" y="${y}" width="7" height="7" rx="1.4" style="fill: var(--ink)"></rect><rect x="${x + 1}" y="${y + 1}" width="5" height="5" rx="1" style="fill: var(--card)"></rect><rect x="${x + 2}" y="${y + 2}" width="3" height="3" rx=".6" style="fill: var(--ink)"></rect>`;
+        });
+        qr.innerHTML = h;
+      })();
+
+      // typed text → one span per character
+      const splitChars = (el) => {
+        const text = el.textContent; el.textContent = "";
+        return [...text].map((c) => { const s = document.createElement("span"); s.textContent = c; el.appendChild(s); return s; });
+      };
+      const badChars = splitChars(document.getElementById("typed-bad"));
+      const goodChars = splitChars(document.getElementById("typed-good"));
+
+      // sparkles around the bear
+      const sparks = [];
+      const sparkHost = document.getElementById("sparks");
+      for (let i = 0; i < 14; i++) {
+        const im = document.createElement("img");
+        im.src = i % 3 === 0 ? "assets/img/star.svg" : "assets/img/sparkle.svg";
+        im.className = "spark"; sparkHost.appendChild(im);
+        const a = (i / 14) * Math.PI * 2 + rnd() * 0.3, d = 190 + rnd() * 90;
+        sparks.push({ el: im, x: Math.cos(a) * d, y: Math.sin(a) * d * 0.85, r: (rnd() - 0.5) * 240, s: 0.7 + rnd() * 0.6 });
+      }
+
+      // crash riders
+      const SHIELD_SVG = `<svg viewBox="-24 -28 248 282" aria-hidden="true"><path d="M100 -22 L214 10 V100 C214 178 160 226 100 248 C40 226 -14 178 -14 100 V10 Z" style="fill: var(--sky-soft); stroke: var(--sky); stroke-width: 6; stroke-linejoin: round"></path></svg>`;
+      const riders = ["cuddle-bear", "robo-pal", "dino-chat", "bunny-buds"].map((k, i) => {
+        const d = document.createElement("div");
+        d.className = "rider"; d.style.left = (-180 + i * 440) + "px";
+        d.innerHTML = SHIELD_SVG + `<img src="assets/img/${k}.svg" alt="" />`;
+        document.getElementById("riders").appendChild(d);
+        return d;
+      });
+
+      // test tiles
+      const TOPICS = [["flame", "Danger"], ["secret", "Secrets"], ["heartbreak", "Feelings"], ["house", "Personal info"], ["sad", "Sad days"], ["noentry", "Grown-up stuff"]];
+      const tiles = TOPICS.map(([icon, label], i) => {
+        const t = document.createElement("div");
+        t.className = "tile"; t.style.left = 96 + i * (270 + 21.6) + "px";
+        t.innerHTML =
+          `<div class="tile-flip">` +
+          `<div class="face waiting" data-layout-allow-overlap><img class="ic" src="assets/img/${icon}.svg" alt="" /><div class="t-label" data-layout-allow-overlap>${label}</div><span class="tag waiting" data-layout-allow-overlap>Waiting</span></div>` +
+          `<div class="face testing" data-layout-allow-overlap><img class="ic" src="assets/img/${icon}.svg" alt="" /><div class="t-label" data-layout-allow-overlap>${label}</div><span class="tag testing" data-layout-allow-overlap>Testing…</span></div>` +
+          `<div class="face safe" data-layout-allow-overlap><img class="ic" src="assets/img/${icon}.svg" alt="" /><div class="t-label" data-layout-allow-overlap>${label}</div><span class="tag safe" data-layout-allow-overlap><img src="assets/img/check.svg" alt="" />Safe</span></div>` +
+          `</div>`;
+        document.getElementById("tiles").appendChild(t);
+        return { flip: t.querySelector(".tile-flip"), testing: t.querySelector(".face.testing"), safe: t.querySelector(".face.safe") };
+      });
+
+      // confetti
+      const COLORS = ["var(--sky)", "var(--sun)", "var(--safe)", "var(--toy-pink)", "var(--grade-d)", "var(--toy-lilac)"];
+      const confetti = [];
+      for (let i = 0; i < 44; i++) {
+        const c = document.createElement("i");
+        c.className = "confetti"; c.style.background = COLORS[i % COLORS.length];
+        document.getElementById("confetti").appendChild(c);
+        const a = rnd() * Math.PI * 2, d = 170 + rnd() * 230;
+        confetti.push({ el: c, x: Math.cos(a) * d, y: Math.sin(a) * d - 60, r: (rnd() - 0.5) * 720, s: 0.7 + rnd() * 0.7 });
+      }
+
+      /* ───────── timeline ───────── */
+      const tl = gsap.timeline({ paused: true });
+      const pop = (sel, t, from = 0.5) => tl.fromTo(sel, { scale: from, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.42, ease: "back.out(2.2)" }, t);
+      const typeOut = (chars, t0, step) => chars.forEach((c, i) => tl.set(c, { opacity: 1 }, t0 + i * step));
+      const dotsBounce = (sel, t0, dur) => tl.fromTo(`${sel} i`, { y: 0 }, { y: -10, duration: 0.18, ease: "sine.inOut", yoyo: true, repeat: Math.max(1, Math.round(dur / 0.18) - 1), stagger: 0.08 }, t0);
+
+      // initial states
+      gsap.set(["#ans-bad", "#ans-good", "#tag-bad", "#tag-good", "#typed-good", "#hb-1", "#hb-2", "#helper-cheer", "#knob-on"], { opacity: 0 });
+      gsap.set("#bear-shield", { opacity: 0, scale: 0.4, transformOrigin: "50% 50%" });
+
+      /* Scene 1 — cold open (0 → 3.0) */
+      tl.fromTo("#kid-bubble", { scale: 0.7, opacity: 0, transformOrigin: "0% 100%" }, { scale: 1, opacity: 1, duration: 0.4, ease: "back.out(2)" }, 0.08);
+      tl.fromTo("#bear", { y: 0 }, { y: -10, duration: 0.6, ease: "sine.inOut", yoyo: true, repeat: 11 }, 0);
+      tl.fromTo("#ans-bad", { scale: 0.6, opacity: 0, transformOrigin: "0% 100%" }, { scale: 1, opacity: 1, duration: 0.35, ease: "back.out(2)" }, 0.55);
+      dotsBounce("#dots-1", 0.6, 0.35);
+      tl.set("#dots-1", { opacity: 0 }, 0.96);
+      typeOut(badChars, 0.98, 0.036);
+      tl.to("#ans-bad-body", { backgroundColor: "#fde3df", borderColor: "#b8261c", duration: 0.15 }, 1.84);
+      tl.fromTo("#tag-bad", { scale: 2.4, opacity: 0, rotation: -14 }, { scale: 1, opacity: 1, rotation: 4, duration: 0.32, ease: "back.out(1.6)" }, 1.84);
+      tl.to("#ans-bad", { keyframes: [{ x: -16, duration: 0.07 }, { x: 14, duration: 0.07 }, { x: -10, duration: 0.07 }, { x: 6, duration: 0.07 }, { x: 0, duration: 0.07 }], ease: "none" }, 1.9);
+
+      /* Scene 2 — turn on the shield (3.0 → 7.9) */
+      tl.fromTo("#talk-in", { scale: 1.08, y: 80, transformOrigin: "960px 481px" }, { scale: 1, y: 0, duration: 0.6, ease: "power3.inOut" }, 2.85);
+      tl.fromTo("#talk-in .scene-title", { opacity: 0, y: -30 }, { opacity: 1, y: 0, duration: 0.4, ease: "power3.out" }, 3.0);
+      tl.fromTo("#helper", { y: 300 }, { y: 0, duration: 0.5, ease: "back.out(1.5)" }, 3.0);
+      tl.fromTo(["#sw-label", "#switch"], { y: 280, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, ease: "back.out(1.4)", stagger: 0.06 }, 3.04);
+      tl.fromTo("#hb-1", { scale: 0.6, opacity: 0, transformOrigin: "0% 100%" }, { scale: 1, opacity: 1, duration: 0.38, ease: "back.out(2)" }, 3.12);
+      tl.fromTo("#brand", { y: -140 }, { y: 0, duration: 0.5, ease: "back.out(1.6)" }, 3.0);
+      // hand travels in and taps the knob
+      tl.fromTo("#hand", { x: 640, y: 260, rotation: -18 }, { x: 0, y: 0, rotation: 0, duration: 0.7, ease: "power3.out" }, 3.5);
+      tl.to("#hand", { scale: 0.86, duration: 0.08, ease: "power2.in", transformOrigin: "50% 0%" }, 4.2);
+      tl.to("#hand", { scale: 1, duration: 0.14, ease: "power2.out" }, 4.3);
+      tl.to("#hand", { x: 420, y: 320, rotation: 14, opacity: 0, duration: 0.5, ease: "power2.in" }, 4.75);
+      // switch flips
+      tl.to("#knob", { x: 268, duration: 0.3, ease: "back.out(1.7)" }, 4.28);
+      tl.to("#switch-on", { opacity: 1, duration: 0.2 }, 4.28);
+      tl.to("#sw-off-t", { opacity: 0, duration: 0.12 }, 4.28);
+      tl.to("#sw-on-t", { opacity: 1, duration: 0.2 }, 4.36);
+      tl.to("#knob-off", { opacity: 0, duration: 0.15 }, 4.32);
+      tl.to("#knob-on", { opacity: 1, duration: 0.15 }, 4.32);
+      // shield wraps the bear
+      tl.to("#talk-glow", { opacity: 1, duration: 0.35 }, 4.32);
+      tl.to("#bear-shield", { opacity: 1, scale: 1, duration: 0.5, ease: "back.out(2)" }, 4.32);
+      sparks.forEach((p, i) => {
+        tl.set(p.el, { opacity: 1 }, 4.34 + i * 0.01);
+        tl.fromTo(p.el, { x: 0, y: 0, scale: 0.3, rotation: 0 }, { x: p.x, y: p.y, scale: p.s, rotation: p.r, duration: 0.7, ease: "power3.out" }, 4.34 + i * 0.01);
+        tl.to(p.el, { opacity: 0, duration: 0.3 }, 4.84 + i * 0.01);
+      });
+      // bad answer leaves, good answer types out
+      tl.to("#ans-bad", { scale: 0.7, opacity: 0, duration: 0.22, ease: "power2.in" }, 4.32);
+      tl.fromTo("#ans-good", { scale: 0.6, opacity: 0, transformOrigin: "0% 100%" }, { scale: 1, opacity: 1, duration: 0.35, ease: "back.out(2)" }, 4.58);
+      dotsBounce("#dots-2", 4.6, 0.25);
+      tl.set("#dots-2", { opacity: 0 }, 4.88);
+      tl.set("#typed-good", { opacity: 1 }, 4.88);
+      typeOut(goodChars, 4.9, 0.026);
+      tl.fromTo("#tag-good", { scale: 2.2, opacity: 0, rotation: -12 }, { scale: 1, opacity: 1, rotation: 4, duration: 0.32, ease: "back.out(1.6)" }, 6.24);
+      tl.to("#ans-good-body", { backgroundColor: "#ddf4e7", borderColor: "#0d6b45", duration: 0.2 }, 6.24);
+      // Buddy cheers
+      tl.to("#hb-1", { opacity: 0, scale: 0.8, duration: 0.15 }, 6.28);
+      tl.fromTo("#hb-2", { scale: 0.6, opacity: 0, transformOrigin: "0% 100%" }, { scale: 1, opacity: 1, duration: 0.38, ease: "back.out(2)" }, 6.34);
+      tl.set("#helper-shield", { opacity: 0 }, 6.3);
+      tl.set("#helper-cheer", { opacity: 1 }, 6.3);
+      tl.to("#helper", { y: -26, duration: 0.2, ease: "power2.out", yoyo: true, repeat: 3 }, 6.3);
+      // exit
+      tl.to("#talk-in", { x: -260, opacity: 0, duration: 0.35, ease: "power2.in" }, 7.75);
+
+      /* Scene 3 — crash test (7.9 → 12.4) */
+      tl.fromTo("#crash-in", { x: 260, opacity: 0 }, { x: 0, opacity: 1, duration: 0.4, ease: "power3.out" }, 7.85);
+      tl.fromTo("#round-chip", { scale: 0.5, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.4, ease: "back.out(2)" }, 8.05);
+      riders.forEach((r) => tl.fromTo(r, { x: 0 }, { x: 760, duration: 4.6, ease: "none" }, 7.8));
+      riders.forEach((r, i) => tl.fromTo(r, { y: 0 }, { y: -8, duration: 0.25, ease: "sine.inOut", yoyo: true, repeat: 17 }, 7.8 + i * 0.12));
+      tl.fromTo("#stripes", { x: 0 }, { x: -760, duration: 4.6, ease: "none" }, 7.8);
+      tl.fromTo("#gate-scan", { y: 0 }, { y: 216, duration: 0.5, ease: "sine.inOut", yoyo: true, repeat: 8 }, 7.8);
+      tl.fromTo("#prog-fill", { scaleX: 0 }, { scaleX: 1, duration: 3.1, ease: "none" }, 8.2);
+      const cnt = { n: 0 }, nEl = document.getElementById("prog-n");
+      tl.to(cnt, { n: 100, duration: 3.1, ease: "none", onUpdate: () => { nEl.textContent = Math.round(cnt.n); } }, 8.2);
+      tl.set("#prog-fin", { opacity: 0 }, 0);
+      tl.set("#prog-run", { opacity: 0 }, 11.36);
+      tl.set("#prog-fin", { opacity: 1 }, 11.36);
+      tl.to("#prog-done", { opacity: 1, duration: 0.25 }, 11.36);
+      tiles.forEach((t, i) => {
+        const tFlip = 8.8 + i * 0.5;
+        tl.to(t.testing, { opacity: 1, duration: 0.15 }, tFlip - 0.5);
+        tl.fromTo(t.flip, { y: 0 }, { y: -10, duration: 0.2, ease: "power2.out" }, tFlip - 0.5);
+        tl.fromTo(t.safe, { rotationY: 180 }, { rotationY: 360, duration: 0.42, ease: "back.out(1.4)" }, tFlip);
+        tl.to(t.flip.querySelectorAll(".face.waiting, .face.testing"), { rotationY: 180, duration: 0.42, ease: "back.out(1.4)" }, tFlip);
+        tl.to(t.flip, { y: 0, duration: 0.3, ease: "power2.out" }, tFlip + 0.1);
+      });
+      tl.to("#crash-in", { x: -260, opacity: 0, duration: 0.35, ease: "power2.in" }, 12.25);
+
+      /* Scene 4 — report card (12.4 → 16.0) */
+      tl.fromTo("#report-in", { x: 260, opacity: 0 }, { x: 0, opacity: 1, duration: 0.4, ease: "power3.out" }, 12.3);
+      tl.fromTo("#sunburst", { rotation: 0, opacity: 0 }, { rotation: 40, opacity: 1, duration: 3.6, ease: "none" }, 12.4);
+      tl.fromTo("#sticker-a", { scale: 2.6, opacity: 0, rotation: -40 }, { scale: 1, opacity: 1, rotation: -6, duration: 0.42, ease: "back.out(1.5)" }, 12.68);
+      confetti.forEach((c, i) => {
+        tl.set(c.el, { opacity: 1 }, 12.8 + (i % 6) * 0.015);
+        tl.fromTo(c.el, { x: 0, y: 0, rotation: 0, scale: c.s }, { x: c.x, y: c.y + 120, rotation: c.r, duration: 1.3, ease: "power3.out" }, 12.8 + (i % 6) * 0.015);
+        tl.to(c.el, { opacity: 0, duration: 0.45 }, 13.75 + (i % 5) * 0.06);
+      });
+      pop("#rep-tag .tag", 13.05);
+      tl.fromTo("#rep-toy", { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: 0.4, ease: "power3.out" }, 13.2);
+      tl.fromTo("#ba-1", { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: 0.4, ease: "back.out(1.6)" }, 12.9);
+      tl.fromTo("#ba-2", { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: 0.4, ease: "back.out(1.6)" }, 13.4);
+      tl.fromTo("#fill-d", { scaleX: 0 }, { scaleX: 1, duration: 0.7, ease: "power2.out" }, 13.3);
+      tl.fromTo("#fill-a", { scaleX: 0 }, { scaleX: 1, duration: 0.7, ease: "power2.out" }, 13.8);
+      const pD = { n: 0 }, pA = { n: 0 }, dEl = document.getElementById("pct-d"), aEl = document.getElementById("pct-a");
+      tl.to(pD, { n: 73, duration: 0.7, ease: "power2.out", onUpdate: () => { dEl.textContent = Math.round(pD.n); } }, 13.3);
+      tl.to(pA, { n: 99, duration: 0.7, ease: "power2.out", onUpdate: () => { aEl.textContent = Math.round(pA.n); } }, 13.8);
+      tl.to("#report-in", { x: -260, opacity: 0, duration: 0.35, ease: "power2.in" }, 15.85);
+
+      /* Scene 5 — parent scan (16.0 → 19.4) */
+      tl.fromTo("#scan-in", { x: 260, opacity: 0 }, { x: 0, opacity: 1, duration: 0.4, ease: "power3.out" }, 15.9);
+      gsap.set(["#cap-2"], { opacity: 0 });
+      tl.fromTo("#laser", { y: 0 }, { y: 270, duration: 0.4, ease: "sine.inOut", yoyo: true, repeat: 1 }, 16.0);
+      tl.to("#laser", { opacity: 0, duration: 0.1 }, 16.78);
+      tl.to(".sc", { borderColor: "#4fcf8a", duration: 0.15 }, 16.8);
+      tl.fromTo("#scan-ok", { scale: 0.3, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.35, ease: "back.out(2.4)" }, 16.8);
+      tl.to("#cap-1", { opacity: 0, duration: 0.12 }, 16.8);
+      tl.to("#cap-2", { opacity: 1, duration: 0.15 }, 16.84);
+      tl.to("#cap-2", { opacity: 0, duration: 0.2 }, 17.3);
+      tl.fromTo("#parent", { y: 940 }, { y: 0, duration: 0.5, ease: "power3.out" }, 17.28);
+      tl.fromTo("#p-sticker", { scale: 2, opacity: 0, rotation: -30 }, { scale: 1, opacity: 1, rotation: -6, duration: 0.4, ease: "back.out(1.5)" }, 17.65);
+      pop("#p-tag .tag", 17.85);
+      tl.fromTo(["#p-fact", "#p-btn"], { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: 0.35, ease: "power3.out", stagger: 0.1 }, 18.0);
+      tl.fromTo("#scan-kicker", { scale: 0.5, opacity: 0, transformOrigin: "0% 50%" }, { scale: 1, opacity: 1, duration: 0.4, ease: "back.out(2)" }, 16.15);
+      tl.fromTo("#scan-head span", { y: 70, opacity: 0 }, { y: 0, opacity: 1, duration: 0.45, ease: "back.out(1.4)", stagger: 0.1 }, 16.25);
+      tl.to("#scan-in", { opacity: 0, scale: 0.97, duration: 0.3, ease: "power2.in" }, 19.25);
+
+      /* Scene 6 — lockup (19.4 → 22.8) */
+      tl.fromTo("#o-pad", { scaleX: 0.3, opacity: 0 }, { scaleX: 1, opacity: 1, duration: 0.4, ease: "back.out(2)" }, 19.4);
+      tl.fromTo("#o-buddy", { y: 420, opacity: 0 }, { y: 0, opacity: 1, duration: 0.55, ease: "back.out(1.5)" }, 19.35);
+      tl.fromTo("#o-buddy img", { y: 0 }, { y: -14, duration: 0.5, ease: "sine.inOut", yoyo: true, repeat: 5 }, 19.9);
+      ["#orb-1", "#orb-2", "#orb-3"].forEach((o, i) => {
+        tl.fromTo(o, { scale: 0, rotation: -90 }, { scale: 1, rotation: 0, duration: 0.45, ease: "back.out(2.4)" }, 19.6 + i * 0.1);
+        tl.fromTo(o, { y: 0 }, { y: -16, duration: 0.6, ease: "sine.inOut", yoyo: true, repeat: 3, immediateRender: false }, 20.1 + i * 0.15);
+      });
+      tl.fromTo("#o-name-1", { y: 120, opacity: 0, scale: 0.9 }, { y: 0, opacity: 1, scale: 1, duration: 0.45, ease: "back.out(1.6)", transformOrigin: "0% 100%" }, 19.55);
+      tl.fromTo("#o-name-2", { y: 120, opacity: 0, scale: 0.9 }, { y: 0, opacity: 1, scale: 1, duration: 0.45, ease: "back.out(1.6)", transformOrigin: "0% 100%" }, 19.68);
+      tl.fromTo("#o-tag", { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: 0.4, ease: "power3.out" }, 19.98);
+      tl.fromTo("#o-steps > *", { y: 50, opacity: 0, scale: 0.8 }, { y: 0, opacity: 1, scale: 1, duration: 0.4, ease: "back.out(2)", stagger: 0.1 }, 20.3);
+
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>

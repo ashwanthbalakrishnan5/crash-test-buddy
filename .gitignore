@@ -1,0 +1,11 @@
+CLAUDE.md
+.DS_Store
+node_modules/
+dist/
+.wrangler/
+.claude/worktrees/
+.claude/settings.local.json
+source/out/
+source/test/
+brag-output/composition/.hyperframes/
+brag-output/composition/.thumbnails/

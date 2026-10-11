@@ -1,0 +1,42 @@
+<!-- @dsCard group="Navigation" height=160 -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>TopMenu — preview</title>
+<style>
+#root { padding: var(--space-6); }
+.pv-row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-6); }
+.pv-top { align-items: flex-start; }
+.pv-col { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-4); margin: 0; padding: 0; }
+.pv-pad { padding-top: var(--space-6); }
+figure { margin: 0; display: flex; flex-direction: column; align-items: center; gap: var(--space-2); }
+figcaption { color: var(--ink-soft); }
+.pv-icons { display: grid; grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); gap: var(--space-4); }
+.pv-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(176px, 1fr)); gap: var(--space-4); }
+.pv-wide { max-width: 640px; } .pv-narrow { max-width: 440px; }
+.pv-menu { border: 3px solid var(--line); border-radius: var(--radius-lg); overflow: hidden; }
+.pv-check { display: flex; align-items: center; gap: var(--space-2); color: var(--ink); } .pv-check input { width: 24px; height: 24px; }
+.pv-link { padding: var(--space-2) 0; border: 0; background: none; color: var(--sky); font-family: var(--font-body); text-decoration: underline; cursor: pointer; }
+.pv-rel { position: relative; } .pv-burst { justify-content: center; padding: var(--space-16) 0; }
+.pv-row .ctb-ship { width: 440px; } .pv-row .ctb-fix { width: 340px; } .pv-row .ctb-bubble { max-width: 300px; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script>
+(() => {
+  // src/previews/TopMenu.jsx
+  var { TopMenu } = window.CTB;
+  var root = ReactDOM.createRoot(document.getElementById("root"));
+  function Demo() {
+    const [cur, setCur] = React.useState("home");
+    const [calm, setCalm] = React.useState(false);
+    return /* @__PURE__ */ React.createElement("div", { className: "ctb-motion pv-menu" }, /* @__PURE__ */ React.createElement(TopMenu, { items: [{ id: "home", label: "Home", icon: "house" }, { id: "ships", label: "Shipments", icon: "box" }], current: cur, onSelect: setCur, calm, onCalmChange: setCalm }));
+  }
+  root.render(/* @__PURE__ */ React.createElement(Demo, null));
+})();
+
+</script>
+</body>
+</html>
